@@ -4,7 +4,7 @@
 @Author: 邵佳泓
 @Date: 2022-07-05 14:35:32
 @LastEditors: 邵佳泓
-@LastEditTime: 2022-07-08 00:14:50
+@LastEditTime: 2022-07-08 02:23:55
 @FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
 import base64
@@ -22,7 +22,8 @@ role_model = role_ns.model('rolemodel', {
 	'roleid': fields.Integer(required=True, description='角色id'),
 	'name': fields.String(required=True, description='角色名'),
 	'description': fields.String(required=True, description='个人简介'),
-	'routes': fields.List(fields.String(required=True, description='路由'))
+	'routes': fields.List(fields.String(required=True, description='路由')),
+	'valid': fields.Boolean(required=True, description='是否有效')
 })
 model = role_ns.model('roleinfo', {
 	'code': fields.Integer(required=True, description='状态码'),
@@ -63,7 +64,7 @@ class RoleIno(Resource):
 			return {'code': 0, 'message': '获取角色信息成功', 'success': True, 'data': data, 'total': length}
 		else:
 			roles = Roles.query.order_by(Roles.roleid.asc() if order == 'ascending' else Roles.roleid.desc()).paginate(page, size, False).items
-			data = [{'roleid': role.roleid, 'name': role.name, 'description': role.description, 'valid': role.valid, 'routes': role.authedroutes}
+			data = [{'roleid': role.roleid, 'name': role.name, 'description': role.description, 'valid': role.valid, 'routes': eval(role.authedroutes)}
                             for role in roles if role.name != 'admin']
 			p = redis.pipeline()
 			p.set(key, str(data).encode('utf-8'))

@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-08 01:18:12
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 01:53:23
+ * @LastEditTime: 2022-07-08 02:20:09
  * @FilePath: /app/src/views/Dashboard/rolesManage.vue
 -->
 <template>
@@ -27,60 +27,6 @@
                   </el-tooltip>
                 </template>
               </el-table-column>
-              <el-table-column label="邮箱" width="150">
-                <template #default="scope">
-                  <el-tooltip :content="scope.row.email">
-                    <span class="flex items-center">
-                      <ElIcon class="mr-3">
-                        <MessageBox />
-                      </ElIcon>
-                      {{ scope.row.email }}
-                    </span>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-              <el-table-column label="中传" width="150">
-                <template #default="scope">
-                  <el-tooltip :content="scope.row.cucaccount ?? '该账号未与中传SSO账号绑定'">
-                    <span class="flex items-center">
-                      {{ scope.row.cucaccount ?? '该账号未与中传SSO账号绑定' }}
-                    </span>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-              <el-table-column label="账号创建时间" width="150">
-                <template #default="scope">
-                  <el-tooltip :content="dayjs(scope.row.created_on).format('YYYY/MM/DD HH:mm:ss')">
-                    <span class="flex items-center">
-                      <ElIcon class="mr-3">
-                        <Timer />
-                      </ElIcon>
-                      {{ dayjs(scope.row.created_on).format('YYYY/MM/DD') }}
-                    </span>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-              <el-table-column label="上次登录时间" width="150">
-                <template #default="scope">
-                  <el-tooltip :content="dayjs(scope.row.last_login).format('YYYY/MM/DD HH:mm:ss')">
-                    <span class="flex items-center">
-                      <ElIcon class="mr-3">
-                        <Timer />
-                      </ElIcon>
-                      {{ dayjs(scope.row.last_login).format('YYYY/MM/DD') }}
-                    </span>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-              <el-table-column label="上次登录IP" width="150">
-                <template #default="scope">
-                  <el-tooltip :content="scope.row.last_login_ip ?? '账号未曾登录'">
-                    <span class="flex items-center">
-                      <el-tag>{{ scope.row.last_login_ip ?? '账号未曾登录' }}</el-tag>
-                    </span>
-                  </el-tooltip>
-                </template>
-              </el-table-column>
               <el-table-column label="账号状态" width="100">
                 <template #default="scope">
                   <el-tooltip :content="scope.row.valid ? '正常' : '封禁中'">
@@ -91,22 +37,22 @@
                   </el-tooltip>
                 </template>
               </el-table-column>
-              <el-table-column label="角色" width="100">
-                <template #default="scope">
-                  <div v-for="rolename in scope.row.role" :key="rolename">
-                    <el-tooltip :content="rolename">
-                      <el-tag closable :disable-transitions="false" @close="handleClose(rolename,scope.row)">{{ rolename }}</el-tag>
-                    </el-tooltip>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="用户简介" width="150">
+              <el-table-column label="角色简介" width="150">
                 <template #default="scope">
                   <el-tooltip :content="scope.row.description ?? '该用户暂时没有填写简介'">
                     <span class="flex items-center">
                       {{ scope.row.description ?? '该用户暂时没有填写简介' }}
                     </span>
                   </el-tooltip>
+                </template>
+              </el-table-column>
+              <el-table-column label="路由" width="100">
+                <template #default="scope">
+                  <div v-for="route in scope.row.routes" :key="route">
+                    <el-tooltip :content="route">
+                      <el-tag closable :disable-transitions="false" @close="handleClose(route,scope.row)">{{ route }}</el-tag>
+                    </el-tooltip>
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="350">
@@ -134,17 +80,12 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus'
-import { MessageBox, Timer } from '@element-plus/icons-vue'
 import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import dayjs from 'dayjs'
 import Service from './api'
 import { Sort } from 'element-plus/es/components/table/src/table/defaults'
 export default defineComponent({
   name: 'UsersManage',
-  components: {
-    Timer,
-    MessageBox
-  },
   setup () {
     const tableData = ref([] as any[])
     const sort = ref<Sort>({
@@ -165,9 +106,9 @@ export default defineComponent({
       })
     }
     const handleBan = (index: number, row: any) => {
-      return ElMessageBox.confirm('是否封禁用户' + row.name + '?')
+      return ElMessageBox.confirm('是否封禁角色' + row.name + '?')
         .then(() => {
-          Service.banUser({ userid: row.userid }).then(
+          Service.banRole({ roleid: row.roleid }).then(
             (res) => {
               ElMessage.success(res.message)
               fetchdata()
@@ -177,9 +118,9 @@ export default defineComponent({
         .catch(() => false)
     }
     const handleDelete = (index: number, row: any) => {
-      return ElMessageBox.confirm('是否删除用户' + row.name + '?')
+      return ElMessageBox.confirm('是否删除角色' + row.name + '?')
         .then(() => {
-          Service.deleteUser({ userid: row.userid }).then(
+          Service.deleteRole({ roleid: row.roleid }).then(
             (res) => {
               ElMessage.success(res.message)
               fetchdata()
@@ -200,16 +141,16 @@ export default defineComponent({
       sort.value = order
       fetchdata()
     }
-    const handleClose = (rolename: string, row: any) => {
-      ElMessageBox.confirm('是否确认删除角色' + rolename + '?')
+    const handleClose = (route: string, row: any) => {
+      ElMessageBox.confirm('是否确认删除路由' + route + '?')
         .then(() => {
-          row.role.splice(row.role.indexOf(rolename), 1)
-          if (row.role.length === 0) {
-            row.role.push('standard')
+          row.routes.splice(row.routesindexOf(route), 1)
+          if (row.routes.length === 0) {
+            row.routes.push('/personal')
           }
-          Service.updateUserInfo({
-            userid: row.userid,
-            role: row.role
+          Service.updateRoleInfo({
+            roleid: row.roleid,
+            routes: row.routes
           }).then(
             (res) => {
               ElMessage.success(res.message)
