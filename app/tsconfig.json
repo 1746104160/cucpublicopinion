@@ -1,0 +1,30 @@
+/*
+ * @Descripttion: 业务管理系统
+ * @version: 1.0.0
+ * @Author: 邵佳泓
+ * @Date: 2022-07-04 13:37:49
+ * @LastEditors: 邵佳泓
+ * @LastEditTime: 2022-07-08 00:26:30
+ * @FilePath: /app/tsconfig.json
+ */
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "suppressImplicitAnyIndexErrors":true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/utils/format.js"]
+}
