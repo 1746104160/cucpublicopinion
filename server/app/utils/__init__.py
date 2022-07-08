@@ -1,8 +1,8 @@
 '''
-@Descripttion: 业务管理系统
-@version: 1.0.0
-@Author: 邵佳泓
-@Date: 2022-07-05 01:07:40
+Descripttion: 业务管理系统
+version: 1.0.0
+Author: 邵佳泓
+Date: 2022-07-05 01:07:40
 LastEditors: 邵佳泓
 LastEditTime: 2022-07-08 11:04:03
 FilePath: /server/app/utils/__init__.py

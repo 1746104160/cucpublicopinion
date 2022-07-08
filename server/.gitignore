@@ -1,11 +1,9 @@
 instance/
 .vscode
-uwsgi.ini
 *.pid
-*/__pycache__
+**/__pycache__
 *.py[cod]
 *$py.class
-
 # C extensions
 *.so
 

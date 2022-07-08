@@ -1,8 +1,8 @@
 '''
-@Descripttion: 业务管理系统
-@version: 1.0.0
-@Author: 邵佳泓
-@Date: 2022-07-05 14:50:55
+Descripttion: 业务管理系统
+version: 1.0.0
+Author: 邵佳泓
+Date: 2022-07-05 14:50:55
 @LastEditors: 邵佳泓
 @LastEditTime: 2022-07-06 08:32:40
 @FilePath: /server/app/managers/auth_manager/__init__.py
