@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-08 01:18:12
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 02:20:09
+ * @LastEditTime: 2022-07-08 08:32:33
  * @FilePath: /app/src/views/Dashboard/rolesManage.vue
 -->
 <template>
@@ -85,11 +85,11 @@ import dayjs from 'dayjs'
 import Service from './api'
 import { Sort } from 'element-plus/es/components/table/src/table/defaults'
 export default defineComponent({
-  name: 'UsersManage',
+  name: 'RolesManage',
   setup () {
     const tableData = ref([] as any[])
     const sort = ref<Sort>({
-      prop: 'userid',
+      prop: 'roleid',
       order: 'ascending'
     })
     const total = ref(0)
