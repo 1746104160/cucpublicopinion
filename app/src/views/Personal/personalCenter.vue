@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:43:00
+ * @LastEditTime: 2022-07-08 08:54:04
  * @FilePath: /app/src/views/Personal/personalCenter.vue
 -->
 
@@ -55,10 +55,14 @@
                   <el-icon style="el-icon-user">
                     <user />
                   </el-icon>
-                  用户组
+                  角色
                 </div>
               </template>
-              {{ roles }}
+               <div v-for="rolename in roles" :key="rolename">
+                    <el-tooltip :content="rolename">
+                      <el-tag :disable-transitions="false">{{rolename}}</el-tag>
+                    </el-tooltip>
+                </div>
             </el-descriptions-item>
             <el-descriptions-item>
               <template #label>
