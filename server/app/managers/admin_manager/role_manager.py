@@ -4,16 +4,15 @@
 @Author: 邵佳泓
 @Date: 2022-07-05 14:35:32
 @LastEditors: 邵佳泓
-@LastEditTime: 2022-07-08 02:23:55
+@LastEditTime: 2022-07-08 09:16:47
 @FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
-import base64
 from http import HTTPStatus
 import time
 from flask_restx import Namespace, Resource, fields, reqparse
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
-from app.model import Users, Roles, User2Role
+from app.model import Users, Roles
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.managers.admin_manager.model import standardmodel
 role_ns = Namespace('role', description='角色管理')

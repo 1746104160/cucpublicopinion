@@ -4,7 +4,7 @@
 @Author: 邵佳泓
 @Date: 2022-07-05 14:35:32
 @LastEditors: 邵佳泓
-@LastEditTime: 2022-07-06 23:34:10
+@LastEditTime: 2022-07-08 10:16:18
 @FilePath: /server/app/managers/auth_manager/login_manager.py
 '''
 import datetime
@@ -100,10 +100,10 @@ class LoginSystem(Resource):
 				db.session.commit()
 				token = create_access_token(identity=user.userid, expires_delta=datetime.timedelta(days=1))
 				return {
-									'code': 0,
-							   					'message': '登录成功',
-							   					'data': {
-																	'accessToken': token,
-																},
-									'success': True,
-								}
+					'code': 0,
+					'message': '登录成功',
+					'data': {
+						'accessToken': token,
+					},
+					'success': True,
+				}

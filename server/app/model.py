@@ -1,15 +1,17 @@
 '''
-@Descripttion: 业务管理系统
-@version: 1.0.0
-@Author: 邵佳泓
-@Date: 2022-07-04 17:53:06
-@LastEditors: 邵佳泓
-@LastEditTime: 2022-07-08 00:15:38
-@FilePath: /server/app/model.py
+Descripttion: 业务管理系统
+version: 1.0.0
+Author: 邵佳泓
+Date: 2022-07-08 01:17:46
+LastEditors: 邵佳泓
+LastEditTime: 2022-07-08 10:55:50
+FilePath: /server/app/model.py
 '''
+
 from werkzeug.security import generate_password_hash, check_password_hash
-from .utils.mysqldb import db
 from app.utils.default_avatar import blob
+from .utils.mysqldb import db
+
 
 
 class User2Role(db.Model):
