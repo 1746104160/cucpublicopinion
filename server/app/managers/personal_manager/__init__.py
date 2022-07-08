@@ -3,9 +3,9 @@ Descripttion: 业务管理系统
 version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-06 22:49:05
-@LastEditors: 邵佳泓
-@LastEditTime: 2022-07-07 01:09:10
-@FilePath: /server/app/managers/personal_manager/__init__.py
+LastEditors: 邵佳泓
+LastEditTime: 2022-07-08 12:56:34
+FilePath: /server/app/managers/personal_manager/__init__.py
 '''
 from flask import Blueprint
 from flask_restx import Api

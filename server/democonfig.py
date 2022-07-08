@@ -1,0 +1,28 @@
+'''
+Descripttion: 业务管理系统
+version: 1.0.0
+Author: 邵佳泓
+Date: 2022-07-08 01:17:46
+LastEditors: 邵佳泓
+LastEditTime: 2022-07-08 12:22:14
+FilePath: /server/democonfig.py
+'''
+# DEBUG = True
+SECRET_KEY = "APP秘钥"
+JWT_SECRET_KEY = "JWT秘钥"
+JWT_BLACKLIST_ENABLED = True
+JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+CSRF_ENABLED = True
+SQLALCHEMY_DATABASE_URI = "MySQL URI"
+REDIS_URL= "Redis URL"
+SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+JWT_ACCESS_TOKEN_EXPIRES = 86400
+MAIL_SERVER = "邮件服务器地址"
+MAIL_PORT = 587 #smtp端口号
+MAIL_USE_SSL = True
+MAIL_USE_TLS = False
+MAIL_USERNAME = "smtp用户名"
+MAIL_PASSWORD = "smtp授权码"
+MAIL_DEFAULT_SENDER = "邮件发送者"
+BUNDLE_ERRORS = True

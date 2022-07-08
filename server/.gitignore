@@ -1,5 +1,6 @@
-instance/
+
 .vscode
+*.ini
 *.pid
 **/__pycache__
 *.py[cod]

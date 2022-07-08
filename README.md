@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 01:58:55
+ * @LastEditTime: 2022-07-08 12:22:57
  * @FilePath: README.md
 -->
 # 业务管理系统
@@ -33,6 +33,11 @@ cd server
 # 安装命令
 conda env create -f env.yml
 sudo apt install -y uwsgi uwsgi-plugin-python3
+
+# 对照demo.ini文件填写 uwsgi.ini文件
+
+# 对照democonfig.py填写instance/config.py
+
 # 启动后端服务器，地址是http://127.0.0.1:5000/
-uwsgi -i demo.ini
+uwsgi -i uwsgi.ini
 ```
