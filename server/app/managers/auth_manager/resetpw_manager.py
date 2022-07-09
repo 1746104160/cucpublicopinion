@@ -4,46 +4,42 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:55:00
+LastEditTime: 2022-07-09 12:28:20
 FilePath: /server/app/managers/auth_manager/resetpw_manager.py
 '''
 import binascii
 from http import HTTPStatus
-from flask_restx import Namespace, Resource, fields, reqparse
+from flask_restx import Namespace, Resource, reqparse
+from flask_restx.inputs import regex,email
 from app.utils.redisdb import redis
 from app.utils.mysqldb import db
 from app.model import Users
 from app.utils.limiter import limiter
 from app.utils.aes import decrypt
-
+from app.managers.model import standardmodel as model
 resetpw_ns = Namespace('resetpw', description='重置密码')
-model = resetpw_ns.model(
-    'resetpw', {
-        'code': fields.Integer(required=True, description='状态码'),
-        'message': fields.String(required=True, description='状态信息'),
-        'success': fields.Boolean(required=True, description='是否成功'),
-    })
+resetpw_ns.models[model.name] = model
 parser = reqparse.RequestParser(bundle_errors=True)
 parser.add_argument('email',
-                    type=str,
+                    type=email(check=True),
                     location='json',
                     nullable=False,
                     required=True,
                     help='邮箱不能为空')
 parser.add_argument('emailcode',
-                    type=str,
+                    type=regex(r'^\S{6}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='邮件验证码不能为空')
 parser.add_argument('password',
-                    type=str,
+                    type=regex(r'^\S{24}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='密码不能为空')
 parser.add_argument('captcha',
-                    type=str,
+                    type=regex(r'^\S{4}$'),
                     location='json',
                     nullable=False,
                     required=True,
@@ -58,9 +54,9 @@ parser.add_argument('X-CSRFToken',
 
 
 @resetpw_ns.route('')
-@resetpw_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@resetpw_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@resetpw_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@resetpw_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@resetpw_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@resetpw_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class ResetPW(Resource):
     '''
     Author: 邵佳泓
@@ -86,10 +82,10 @@ class ResetPW(Resource):
             return {'code': 1, 'message': '用户名或密码错误', 'success': False}
         except ValueError:
             return {'code': 1, 'message': '用户名或密码错误', 'success': False}
-        email = request_data.get('email')
+        emailaddr = request_data.get('email')
         emailcode = request_data.get('emailcode')
         captcha = request_data.get('captcha')
-        redisemail = redis.get('/'.join(["email", requestid, email]))
+        redisemail = redis.get('/'.join(["email", requestid, emailaddr]))
         code = redis.get("captcha/" + requestid)
         if code is None:
             return {'code': 2, 'message': '验证码已失效', 'success': False}
@@ -100,7 +96,7 @@ class ResetPW(Resource):
         elif redisemail.decode('utf-8') != emailcode:
             return {'code': 5, 'message': '邮件验证码错误', 'success': False}
         else:
-            user = Users.query.filter_by(email=email).first()
+            user = Users.query.filter_by(email=emailaddr).first()
             if user is None:
                 return {'code': 6, 'message': '用户未注册', 'success': False}
             else:

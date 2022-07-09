@@ -4,54 +4,50 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:54:33
+LastEditTime: 2022-07-09 12:24:51
 FilePath: /server/app/managers/auth_manager/register_manager.py
 '''
 import binascii
 import datetime
 from http import HTTPStatus
 import re
-from flask_restx import Namespace, Resource, fields, reqparse
+from flask_restx import Namespace, Resource, reqparse
+from flask_restx.inputs import regex,email
 from app.utils.redisdb import redis
 from app.model import Users, Roles
 from app.utils.limiter import limiter
 from app.utils.aes import decrypt
 from app.utils.ssoauth import loginsso
-
+from app.managers.model import standardmodel as model
 register_ns = Namespace('register', description='注册')
-model = register_ns.model(
-    'register', {
-        'code': fields.Integer(required=True, description='状态码'),
-        'message': fields.String(required=True, description='状态信息'),
-        'success': fields.Boolean(required=True, description='是否成功'),
-    })
+register_ns.models[model.name] = model
 parser = reqparse.RequestParser(bundle_errors=True)
 parser.add_argument('username',
-                    type=str,
+                    type=regex(pattern=r'r"^[a-zA-Z][a-zA-Z0-9_]{5,15}$"'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='用户名不能为空')
 parser.add_argument('password',
-                    type=str,
+                    type=regex(pattern=r'\S{24}'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='密码不能为空')
 parser.add_argument('email',
-                    type=str,
+                    type=email(check=True),
                     location='json',
                     nullable=False,
                     required=True,
                     help='邮箱不能为空')
 parser.add_argument('emailcode',
-                    type=str,
+                    type=regex(pattern=r'\S{6}'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='邮件验证码不能为空')
 parser.add_argument('captcha',
-                    type=str,
+                    type=regex(pattern=r'\S{4}'),
                     location='json',
                     nullable=False,
                     required=True,
@@ -66,9 +62,9 @@ parser.add_argument('X-CSRFToken',
 
 
 @register_ns.route('/systemaccount')
-@register_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@register_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@register_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@register_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@register_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@register_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class RegisterSystem(Resource):
     '''
     Author: 邵佳泓
@@ -96,10 +92,10 @@ class RegisterSystem(Resource):
             return {'code': 1, 'message': '密码不符合要求', 'success': False}
         username = request_data.get('username')
         captcha = request_data.get('captcha')
-        email = request_data.get('email')
+        emailaddr = request_data.get('email')
         emailcode = request_data.get('emailcode')
         code = redis.get("captcha/" + requestid)
-        redisemail = redis.get('/'.join(["email", requestid, email]))
+        redisemail = redis.get('/'.join(["email", requestid, emailaddr]))
         if code is None:
             return {'code': 2, 'message': '验证码已失效', 'success': False}
         elif code.decode('utf-8').lower() != captcha.lower():
@@ -108,17 +104,13 @@ class RegisterSystem(Resource):
             return {'code': 4, 'message': '邮件验证码已失效', 'success': False}
         elif redisemail.decode('utf-8') != emailcode:
             return {'code': 5, 'message': '邮件验证码错误', 'success': False}
-        elif len(username) < 6 or len(username) > 16:
-            return {'code': 6, 'message': '用户名需要在6-16位之间', 'success': False}
-        elif not re.match(r"^[a-zA-Z][a-zA-Z0-9_]{5,15}$", username):
-            return {'code': 7, 'message': '用户名需要以字母开头，只能包含字母、数字和下划线', 'success': False}
         else:
             if Users.query.filter_by(name=username).first():
                 return {'code': 8, 'message': '用户名已注册', 'success': False}
             else:
                 standard = Roles.query.filter_by(name='standard').first()
                 user = Users(name=username,
-                             email=email,
+                             email=emailaddr,
                              role=[standard],
                              created_on=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                              last_login=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -133,19 +125,19 @@ class RegisterSystem(Resource):
 
 ssoparser = reqparse.RequestParser(bundle_errors=True)
 ssoparser.add_argument('username',
-                       type=str,
+                       type=regex(pattern=r'\d{4,15}'),
                        location='json',
                        nullable=False,
                        required=True,
                        help='用户名不能为空')
 ssoparser.add_argument('password',
-                       type=str,
+                       type=regex(pattern=r'\S{24}'),
                        location='json',
                        nullable=False,
                        required=True,
                        help='密码不能为空')
 ssoparser.add_argument('captcha',
-                       type=str,
+                       type=regex(pattern=r'\S{4}'),
                        location='json',
                        nullable=False,
                        required=True,
@@ -165,9 +157,9 @@ ssoparser.add_argument('X-CSRFToken',
 
 
 @register_ns.route('/cucaccount')
-@register_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@register_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@register_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@register_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@register_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@register_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class RegisterSSO(Resource):
     '''
     Author: 邵佳泓

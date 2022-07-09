@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:39:52
+LastEditTime: 2022-07-09 11:59:46
 FilePath: /server/app/managers/auth_manager/captcha_manager.py
 '''
 from http import HTTPStatus
@@ -17,13 +17,13 @@ from captcha.image import ImageCaptcha
 from app.utils.requestid import requestid
 from app.utils.redisdb import redis
 from app.utils.limiter import limiter
-
-
+from app.managers.model import standardmodel
 
 CHAR_SET = [chr(ord('A')+i) for i in range(26)]+\
     [chr(ord('a')+i) for i in range(26)]+\
     [chr(ord('0')+i) for i in range(10)]
 captcha_ns = Namespace('captcha', description='验证码')
+captcha_ns.models[standardmodel.name] = standardmodel
 data_model = captcha_ns.model('captchadata',
                               {'captcha': fields.String(required=True, description='验证码')})
 model = captcha_ns.model(
@@ -36,9 +36,11 @@ model = captcha_ns.model(
 
 
 @captcha_ns.route('/<float:rid>')
-@captcha_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@captcha_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@captcha_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 20/minute, 500/day.")
+@captcha_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@captcha_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.",
+                     standardmodel)
+@captcha_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                     standardmodel)
 class Captcha(Resource):
     '''
     Author: 邵佳泓

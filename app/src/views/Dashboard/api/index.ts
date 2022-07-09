@@ -4,31 +4,50 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 01:03:41
+ * @LastEditTime: 2022-07-09 23:14:01
  * @FilePath: /app/src/views/Dashboard/api/index.ts
  */
 
 import request from '@/utils/request'
 
 const roleApi = {
-  getallUserinfo: 'admin/user/userinfo',
-  updateUserinfo: 'admin/user/update',
-  deleteUser: 'admin/user/delete',
-  banUser: 'admin/user/ban',
   getallRoleinfo: 'admin/role/roleinfo',
   updateRoleinfo: 'admin/role/update',
   createRole: 'admin/role/create',
   deleteRole: 'admin/role/delete',
-  banRole: 'admin/role/ban'
+  banRole: 'admin/role/ban',
+  getallRoutesinfo: 'admin/role/routes'
 }
-
+const userApi = {
+  getallUserinfo: 'admin/user/userinfo',
+  updateUserinfo: 'admin/user/update',
+  deleteUser: 'admin/user/delete',
+  banUser: 'admin/user/ban',
+  getallsimpleRoles: 'admin/user/roles'
+}
 class Service {
   /**
    * @description GET 获取用户信息
    */
   static getAllUserInfo (page:number, size:number, order:string) {
     return request({
-      url: roleApi.getallUserinfo + '/' + page + '/' + size + '/' + order,
+      url: `${userApi.getallUserinfo}?page=${page}&size=${size}&order=${order}`,
+      method: 'GET',
+      json: true
+    }).then((res) => {
+      if (res.code === 0) {
+        return Promise.resolve(res)
+      }
+      return Promise.reject(res)
+    })
+  }
+
+  /**
+   * @description GET 获取简要角色信息
+   */
+  static getAllSimpleRoles () {
+    return request({
+      url: userApi.getallsimpleRoles,
       method: 'GET',
       json: true
     }).then((res) => {
@@ -44,7 +63,7 @@ class Service {
    */
   static updateUserInfo (data:any) {
     return request({
-      url: roleApi.updateUserinfo,
+      url: userApi.updateUserinfo,
       method: 'POST',
       json: true,
       data
@@ -61,7 +80,7 @@ class Service {
    */
   static deleteUser (data:any) {
     return request({
-      url: roleApi.deleteUser,
+      url: userApi.deleteUser,
       method: 'POST',
       json: true,
       data
@@ -78,7 +97,7 @@ class Service {
    */
   static banUser (data:any) {
     return request({
-      url: roleApi.banUser,
+      url: userApi.banUser,
       method: 'POST',
       json: true,
       data
@@ -95,7 +114,23 @@ class Service {
    */
   static getAllRoleInfo (page:number, size:number, order:string) {
     return request({
-      url: roleApi.getallRoleinfo + '/' + page + '/' + size + '/' + order,
+      url: `${roleApi.getallRoleinfo}?page=${page}&size=${size}&order=${order}`,
+      method: 'GET',
+      json: true
+    }).then((res) => {
+      if (res.code === 0) {
+        return Promise.resolve(res)
+      }
+      return Promise.reject(res)
+    })
+  }
+
+  /**
+   * @description GET 获取路由信息
+   */
+  static getAllRoutesInfo () {
+    return request({
+      url: roleApi.getallRoutesinfo,
       method: 'GET',
       json: true
     }).then((res) => {

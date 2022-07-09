@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:35:34
+ * @LastEditTime: 2022-07-09 14:21:29
  * @FilePath: /app/src/utils/validate.ts
  */
 
@@ -12,7 +12,7 @@
  * @param {string} path
  * @returns {Boolean}
  */
-export function isExternal (path:string): boolean {
+export function isExternal (path: string): boolean {
   return /^(https?:|mailto:|tel:)/.test(path)
 }
 
@@ -20,7 +20,7 @@ export function isExternal (path:string): boolean {
    * @param {string} str
    * @returns {Boolean}
    */
-export function validUsername (str:string): boolean {
+export function validUsername (str: string): boolean {
   return /^[a-zA-Z][a-zA-Z0-9_]{5,15}$/.test(str)
 }
 /**

@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:39:35
+ * @LastEditTime: 2022-07-09 14:20:16
  * @FilePath: /app/src/views/Login/components/resetForm.vue
 -->
 
@@ -258,25 +258,26 @@ export default defineComponent({
 })
 </script>
 <style lang="stylus" scoped>
-.form-container{
-  width:100%;
+.form-container {
+  width: 100%;
 
   :deep(.el-input-group__append) {
-    padding:0px 7px;
+    padding: 0px 7px;
   }
 
   :deep(.el-input-group__prepend) {
-    padding:0px 7px;
+    padding: 0px 7px;
   }
 
-  .reset-form{
-    width:100%;
+  .reset-form {
+    width: 100%;
     margin: 0 auto;
   }
-  .operation{
-    text-align:center;
-    position:absolute;
-    top:100%;
+
+  .operation {
+    text-align: center;
+    position: absolute;
+    top: 100%;
     left: 0;
     margin: auto;
     right: 0;

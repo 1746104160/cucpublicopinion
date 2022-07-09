@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:04:38
+LastEditTime: 2022-07-09 10:36:27
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -80,7 +80,7 @@ class Users(db.Model):
         nullable=True,
     )
     description = db.Column(db.String(255))
-    favorites = db.relationship('Favorites', backref='user', lazy='dynamic')
+    # favorites = db.relationship('Favorites', backref='user', lazy='dynamic')
     role = db.relationship('Roles',
                            secondary='user2role',
                            backref=db.backref('users', lazy='dynamic'))
@@ -143,29 +143,6 @@ class Roles(db.Model):
         db.session.commit()
 
 
-class Favorites(db.Model):
-    '''
-    Author: 邵佳泓
-    msg: 喜好信息表
-    '''
-    __tablename__ = 'favorite'
-    favid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-    newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
-    news = db.relationship('News', uselist=False, back_populates="fav")
-
-    @classmethod
-    def add(cls, fav):
-        '''
-        Author: 邵佳泓
-        msg: 添加收藏
-        param {*} cls
-        param {*} user
-        '''
-        db.session.add(fav)
-        db.session.commit()
-
-
 class News(db.Model):
     '''
     Author: 邵佳泓
@@ -186,8 +163,8 @@ class News(db.Model):
     author = db.Column(db.String(50), nullable=False)
     articleSource = db.Column(db.String(20), nullable=False)
     article_url = db.Column(db.String(255), nullable=False)
-    fav = db.relationship('Favorites', uselist=False, back_populates="news")
-    comments = db.relationship('Comments', backref='news', lazy='dynamic')
+    # fav = db.relationship('Favorites', uselist=False, back_populates="news")
+    # comments = db.relationship('Comments', backref='news', lazy='dynamic')
 
     @classmethod
     def add(cls, news):
@@ -200,52 +177,74 @@ class News(db.Model):
         db.session.add(news)
         db.session.commit()
 
+# class Favorites(db.Model):
+#     '''
+#     Author: 邵佳泓
+#     msg: 喜好信息表
+#     '''
+#     __tablename__ = 'favorite'
+#     favid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+#     userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
+#     newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
+#     news = db.relationship('News', uselist=False, back_populates="fav")
 
-class Comments(db.Model):
-    '''
-    Author: 邵佳泓
-    msg: 评论信息表
-    '''
-    __tablename__ = 'comment'
-    commentid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-    newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
-    content = db.Column(db.String(255), nullable=False)
-    comment_time = db.Column(db.DateTime, nullable=False)
-    replies = db.relationship('Replies', backref='comment', lazy='dynamic')
-
-    @classmethod
-    def add(cls, comment):
-        '''
-        Author: 邵佳泓
-        msg: 添加评论
-        param {*} cls
-        param {*} user
-        '''
-        db.session.add(comment)
-        db.session.commit()
+#     @classmethod
+#     def add(cls, fav):
+#         '''
+#         Author: 邵佳泓
+#         msg: 添加收藏
+#         param {*} cls
+#         param {*} user
+#         '''
+#         db.session.add(fav)
+#         db.session.commit()
 
 
-class Replies(db.Model):
-    '''
-    Author: 邵佳泓
-    msg: 回复信息表
-    '''
-    __tablename__ = 'reply'
-    replyid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    responder_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-    reviewer_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-    commentid = db.Column(db.Integer(), db.ForeignKey('comment.commentid'), nullable=False)
-    content = db.Column(db.String(255), nullable=False)
-    reply_time = db.Column(db.DateTime, nullable=False)
+# class Comments(db.Model):
+#     '''
+#     Author: 邵佳泓
+#     msg: 评论信息表
+#     '''
+#     __tablename__ = 'comment'
+#     commentid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+#     userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
+#     newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
+#     content = db.Column(db.String(255), nullable=False)
+#     comment_time = db.Column(db.DateTime, nullable=False)
+#     replies = db.relationship('Replies', backref='comment', lazy='dynamic')
 
-    @classmethod
-    def add(cls, reply):
-        '''
-        Author: 邵佳泓
-        msg: 添加回复
-        param {*} cls
-        param {*} user
-        '''
-        db.session.add(reply)
-        db.session.commit()
+#     @classmethod
+#     def add(cls, comment):
+#         '''
+#         Author: 邵佳泓
+#         msg: 添加评论
+#         param {*} cls
+#         param {*} user
+#         '''
+#         db.session.add(comment)
+#         db.session.commit()
+
+
+# class Replies(db.Model):
+#     '''
+#     Author: 邵佳泓
+#     msg: 回复信息表
+#     '''
+#     __tablename__ = 'reply'
+#     replyid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+#     responder_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
+#     reviewer_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
+#     commentid = db.Column(db.Integer(), db.ForeignKey('comment.commentid'), nullable=False)
+#     content = db.Column(db.String(255), nullable=False)
+#     reply_time = db.Column(db.DateTime, nullable=False)
+
+#     @classmethod
+#     def add(cls, reply):
+#         '''
+#         Author: 邵佳泓
+#         msg: 添加回复
+#         param {*} cls
+#         param {*} user
+#         '''
+#         db.session.add(reply)
+#         db.session.commit()

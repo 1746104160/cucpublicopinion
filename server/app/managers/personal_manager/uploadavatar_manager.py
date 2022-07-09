@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 13:01:18
+LastEditTime: 2022-07-09 17:29:51
 FilePath: /server/app/managers/personal_manager/uploadavatar_manager.py
 '''
 from http import HTTPStatus
@@ -14,18 +14,29 @@ from werkzeug.datastructures import FileStorage
 from app.model import Users
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
-from app.managers.personal_manager.model import model
+from app.managers.model import standardmodel as model
 
 upload_ns = Namespace('upload', description='用户信息')
 upload_ns.models[model.name] = model
 parser = reqparse.RequestParser()
 parser.add_argument('avatar', type=FileStorage, nullable=False, required=True, help='头像不能为空')
-
+parser.add_argument('X-CSRFToken',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='csrf_token不能为空')
+parser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @upload_ns.route('')
-@upload_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@upload_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@upload_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 1/minute, 5/day.")
+@upload_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@upload_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@upload_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class Upload(Resource):
     '''
     Author: 邵佳泓

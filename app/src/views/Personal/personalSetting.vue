@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:43:11
+ * @LastEditTime: 2022-07-09 14:28:49
  * @FilePath: /app/src/views/Personal/personalSetting.vue
 -->
 
@@ -277,7 +277,7 @@ export default defineComponent({
       ElMessageBox.confirm('是否取消修改？')
         .then(() => {
           router.go(0)
-          showpwdReset.value = false
+          showpwdReset.value = showemailReset.value = showssoReset.value = false
           done()
         })
         .catch(() => {
@@ -312,99 +312,113 @@ export default defineComponent({
 </script>
 
 <style lang="stylus" scoped>
-.PersonalSetting{
-    margin-top:20px;
-    .demo-ruleForm{
-        text-align :left;
-    }
-    .set-title{
-      text-align :left;
-    }
-    .secure-item{
-      width:100%;
-      padding:20px;
-      border-bottom:1px solid #f0f0f0;
-      display :flex;
-      flex-direction:row;
-      justify-content :space-between;
-      align-items :center;
-      .secure-info{
-         display :flex;
-      flex-direction:column;
-      justify-content :flex-start;
-      align-items :flex-start;
-        .secure-key{
-          margin-bottom: 4px;
-          color: rgba(0,0,0,.85);
-          font-size: 14px;
-          line-height: 1.6;
-        }
-        .secure-value{
-          color: rgba(0,0,0,.45);
-          font-size: 14px;
-          line-height: 1.6;
-        }
-      }
-      .opera-btn{
-        color:#1890ff;
-        cursor:pointer;
+.PersonalSetting {
+  margin-top: 20px;
 
+  .demo-ruleForm {
+    text-align: left;
+  }
+
+  .set-title {
+    text-align: left;
+  }
+
+  .secure-item {
+    width: 100%;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .secure-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+
+      .secure-key {
+        margin-bottom: 4px;
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .secure-value {
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 14px;
+        line-height: 1.6;
       }
     }
-    .set-info{
-      display :flex;
-      flex-direction :row;
-      justify-content :space-around;
-      align-items :flex-start;
-      .form-info{
 
-      }
-      .avatar{
-        display :flex;
-        flex-direction:row;
-        justify-content:flex-start;
-        align-items :flex-end;
-        .preview{
-           display :flex;
-        flex-direction:column;
-        justify-content:flex-start;
-        align-items :flex-start;
-        margin-right:20px;
-         .avatar{
-            width:174px;
-          height:174px;
-          border-radius:50%;
-         }
+    .opera-btn {
+      color: #1890ff;
+      cursor: pointer;
+    }
+  }
+
+  .set-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+
+    .form-info {
+    }
+
+    .avatar {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: flex-end;
+
+      .preview {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        margin-right: 20px;
+
+        .avatar {
+          width: 174px;
+          height: 174px;
+          border-radius: 50%;
         }
+      }
 
-          .avatar-uploader .el-upload:hover {
-            border-color: #409EFF;
-          }
-          .avatar-uploader-icon {
-            font-size: 28px;
-            color: #8c939d;
-            width: 178px;
-            height: 178px;
-            line-height: 178px;
-            text-align: center;
-          }
-          .avatar {
-            width: 178px;
-            height: 178px;
-            display: block;
-          }
+      .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+      }
+
+      .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+      }
+
+      .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
       }
     }
-    .info{
-        text-align: left;
+  }
+
+  .info {
+    text-align: left;
     padding-left: 20px;
     margin-bottom: 20px;
     font-size: 12px;
-    }
-     .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .text {
@@ -416,7 +430,7 @@ export default defineComponent({
   }
 
   .box-card {
-    width:100%;
+    width: 100%;
   }
 }
 </style>

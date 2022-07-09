@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:42:50
+ * @LastEditTime: 2022-07-09 14:19:45
  * @FilePath: /app/src/views/Personal/components/ssoForm.vue
 -->
 
@@ -360,11 +360,11 @@ export default defineComponent({
 })
 </script>
 <style lang="stylus" scoped>
-.form-container{
-  width:100%;
+.form-container {
+  width: 100%;
 
-  .reset-form{
-    width:100%;
+  .reset-form {
+    width: 100%;
     margin: 0 auto;
   }
 }

@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:35:15
+ * @LastEditTime: 2022-07-09 14:21:15
  * @FilePath: /app/src/utils/request.ts
  */
 
@@ -37,7 +37,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
 
 // 请求拦截器
 axios.interceptors.request.use(
-  (config:AxiosRequestConfig) => {
+  (config: AxiosRequestConfig) => {
     if (storage.getStorageSync('accessToken') && !storage.isExpire('accessToken')) {
       config.headers = {
         ...config.headers,
@@ -57,7 +57,7 @@ axios.interceptors.request.use(
 
 // 响应拦截器
 axios.interceptors.response.use(
-  (res:AxiosResponse) => res,
+  (res: AxiosResponse) => res,
   (err) => {
     if (err.response && err.response.data) {
       const code = err.response.status

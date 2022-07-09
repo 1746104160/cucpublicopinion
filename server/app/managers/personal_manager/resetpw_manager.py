@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:59:15
+LastEditTime: 2022-07-09 17:13:58
 FilePath: /server/app/managers/personal_manager/resetpw_manager.py
 '''
 import binascii
@@ -12,13 +12,14 @@ from http import HTTPStatus
 
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Namespace, Resource, reqparse
+from flask_restx.inputs import regex
 from app.model import Users
 from app.utils.redisdb import redis
 from app.utils.mysqldb import db
 from app.utils.limiter import limiter
 from app.utils.aes import decrypt
 from app.utils.ssoauth import loginsso
-from app.managers.personal_manager.model import model
+from app.managers.model import standardmodel as model
 
 resetpw_ns = Namespace('resetpw', description='重置密码')
 resetpw_ns.models[model.name] = model
@@ -42,13 +43,13 @@ parser.add_argument('verify',
                     required=True,
                     help='验证凭据不能为空')
 parser.add_argument('password',
-                    type=str,
+                    type=regex(r'\S{24}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='新的密码不能为空')
 parser.add_argument('captcha',
-                    type=str,
+                    type=regex(r'\S{4}$'),
                     location='json',
                     nullable=False,
                     required=True,
@@ -60,12 +61,17 @@ parser.add_argument('X-CSRFToken',
                     nullable=False,
                     required=True,
                     help='csrf_token不能为空')
-
+parser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @resetpw_ns.route('')
-@resetpw_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@resetpw_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@resetpw_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@resetpw_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@resetpw_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@resetpw_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class ResetPW(Resource):
     '''
     Author: 邵佳泓
@@ -136,7 +142,7 @@ class ResetPW(Resource):
             elif code.decode('utf-8').lower() != captcha.lower():
                 return {'code': 4, 'message': '验证码错误', 'success': False}
             elif not loginsso(account, cucpassword):
-                return {'code': 5, 'message': '中传SSO登录失败', 'success': False}
+                return {'code': 5, 'message': 'CUC用户名或密码错误', 'success': False}
             else:
                 user = Users.query.filter_by(userid=get_jwt_identity()).first()
                 if Users.query.filter_by(cucaccount=account).first().userid != user.userid:

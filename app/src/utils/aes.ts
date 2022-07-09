@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:35:01
+ * @LastEditTime: 2022-07-09 14:21:21
  * @FilePath: /app/src/utils/aes.ts
  */
 
@@ -18,7 +18,7 @@
 import CryptoES from 'crypto-es'
 import Cookies from 'js-cookie'
 // 加密
-export function encrypt (word:string) {
+export function encrypt (word: string) {
   const keyStr = Cookies.get('requestid') as string
   const key = CryptoES.enc.Utf8.parse(keyStr.slice(0, 32))
   const srcs = CryptoES.enc.Utf8.parse(word)

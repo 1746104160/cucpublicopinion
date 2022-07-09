@@ -4,18 +4,19 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:30:19
+LastEditTime: 2022-07-09 21:43:33
 FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
 from http import HTTPStatus
 import time
 from flask_restx import Namespace, Resource, fields, reqparse
+from flask_restx.inputs import positive, regex
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
 from app.model import Users, Roles
-from app.managers.admin_manager.model import standardmodel
+from app.managers.model import standardmodel
 
 role_ns = Namespace('role', description='角色管理')
 role_ns.models[standardmodel.name] = standardmodel
@@ -27,45 +28,78 @@ role_model = role_ns.model(
         'routes': fields.List(fields.String(required=True, description='路由')),
         'valid': fields.Boolean(required=True, description='是否有效')
     })
+data_model = role_ns.model(
+    'roledatamodel', {
+        'roles': fields.List(fields.Nested(role_model)),
+        'total': fields.Integer(required=True, description='总数')
+    })
 model = role_ns.model(
     'roleinfo', {
         'code': fields.Integer(required=True, description='状态码'),
         'message': fields.String(required=True, description='状态信息'),
         'success': fields.Boolean(required=True, description='是否成功'),
-        'data': fields.List(fields.Nested(role_model, description='数据')),
-        'total': fields.Integer(required=True, description='总数')
+        'data': fields.Nested(data_model, description='数据')
+    })
+routesmodel = role_ns.model(
+    'allroles', {
+        'code': fields.Integer(required=True, description='状态码'),
+        'message': fields.String(required=True, description='状态信息'),
+        'success': fields.Boolean(required=True, description='是否成功'),
+        'data': fields.List(fields.String, required=True, description='路由'),
     })
 
+pagination_reqparser = reqparse.RequestParser(bundle_errors=True)
+pagination_reqparser.add_argument('page', location='args', type=positive, default=1, help='页码')
+pagination_reqparser.add_argument('size',
+                                  location='args',
+                                  type=positive,
+                                  default=10,
+                                  choices=[5, 10, 20],
+                                  help='每页数量')
+pagination_reqparser.add_argument('order',
+                                  location='args',
+                                  type=regex(pattern='^((ascending)|(descending)){1}$'),
+                                  default='ascending',
+                                  choices=['ascending', 'descending'],
+                                  help='排序方式')
+pagination_reqparser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
-@role_ns.route('/roleinfo/<int:page>/<int:size>/<string:order>')
-@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 20/minute, 1000/day.")
-class RoleIno(Resource):
+@role_ns.route('/roleinfo')
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class RoleInfo(Resource):
     '''
     Author: 邵佳泓
     msg: 发送角色信息
     '''
     decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
 
-    @role_ns.doc(params={'page': '页码', 'size': '每页数量', 'order': '排序'})
+    @role_ns.expect(pagination_reqparser)
     @role_ns.marshal_with(model)
     @jwt_required()
-    def get(self, page: int, size: int, order: str):
+    def get(self):
         '''
         Author: 邵佳泓
         msg: 发送角色信息
         param {*} self
-        param {int} page
-        param {int} size
-        param {str} order
         '''
+        request_data = pagination_reqparser.parse_args()
+        page = request_data.get('page')
+        size = request_data.get('size')
+        order = request_data.get('order')
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
         expire_time = int(time.time()) + 86400
         key = '/'.join(['roleinfo', order, str(page), str(size)])
         length = Roles.query.count()
-        if 'admin' not in [role.name for role in user.role]:
+        if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         elif (bytedata := redis.get(key)) and page != length // size + 1:
             data = eval(bytedata.decode('utf-8'))
@@ -73,8 +107,10 @@ class RoleIno(Resource):
                 'code': 0,
                 'message': '获取角色信息成功',
                 'success': True,
-                'data': data,
-                'total': length
+                'data': {
+                    'roles': data,
+                    'total': length
+                }
             }
         else:
             roles = Roles.query.order_by(Roles.roleid.asc() if order ==
@@ -95,26 +131,78 @@ class RoleIno(Resource):
                 'code': 0,
                 'message': '获取角色信息成功',
                 'success': True,
-                'data': data,
-                'total': length
+                'data': {
+                    'roles':data,
+                    'total': length
+                }
+            }
+roleinfoparser = reqparse.RequestParser(bundle_errors=True)
+roleinfoparser.add_argument('Authorization',
+                            type=str,
+                            location='headers',
+                            nullable=False,
+                            required=True,
+                            help='Authorization不能为空')
+@role_ns.route('/routes')
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class AllRoutesInfo(Resource):
+    '''
+    Author: 邵佳泓
+    msg: 返回全部路由
+    '''
+    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    @role_ns.marshal_with(routesmodel)
+    @role_ns.expect(roleinfoparser)
+    @jwt_required()
+    def get(self):
+        '''
+        Author: 邵佳泓
+        msg: 返回全部路由
+        param {*} self
+        '''
+        userid = get_jwt_identity()
+        user = Users.query.filter_by(userid=userid).first()
+        if 'admin' != user.role[0].name:
+            return {'code': 1, 'message': '非管理员用户', 'success': False}
+        else:
+            routes = user.role[0].authedroutes
+            return {
+                'code': 0,
+                'message': '获取角色信息成功',
+                'success': True,
+                'data': [route for route in eval(routes) if route != '/dashboard']
             }
 
-
-updateparser = reqparse.RequestParser()
-updateparser.add_argument('roleid', type=int, nullable=False, required=True, help='角色ID不能为空')
+updateparser = reqparse.RequestParser(bundle_errors=True)
+updateparser.add_argument('roleid', type=positive, nullable=False, required=True, help='角色ID不能为空')
 updateparser.add_argument('routes',
-                          type=str,
+                          type=regex(pattern=r'^/\w+$'),
                           nullable=False,
                           required=True,
                           help='角色路由不能为空',
                           action='append')
-
+updateparser.add_argument('X-CSRFToken',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='csrf_token不能为空')
+updateparser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @role_ns.route('/update')
-@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 100/day.")
-class Update(Resource):
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class UpdateRole(Resource):
     '''
     Author: 邵佳泓
     msg: 更新角色权限
@@ -132,7 +220,7 @@ class Update(Resource):
         '''
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
-        if 'admin' not in [role.name for role in user.role]:
+        if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
             request_data = updateparser.parse_args()
@@ -146,16 +234,37 @@ class Update(Resource):
             return {'code': 0, 'message': '变更角色权限成功', 'success': True}
 
 
-createparser = reqparse.RequestParser()
-createparser.add_argument('name', type=int, nullable=False, required=True, help='角色名不能为空')
-createparser.add_argument('description', type=str, nullable=False, required=True, help='角色简介不能为空')
+createparser = reqparse.RequestParser(bundle_errors=True)
+createparser.add_argument('name',
+                          type=regex(pattern=r'\S{2,}'),
+                          nullable=False,
+                          required=True,
+                          help='角色名不能为空')
+createparser.add_argument('description',
+                          type=regex(pattern=r'\S+'),
+                          nullable=False,
+                          required=True,
+                          help='角色简介不能为空')
+createparser.add_argument('X-CSRFToken',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='csrf_token不能为空')
+createparser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 
 @role_ns.route('/create')
-@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 100/day.")
-class Create(Resource):
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class CreateRole(Resource):
     '''
     Author: 邵佳泓
     msg: 添加角色
@@ -173,29 +282,44 @@ class Create(Resource):
         '''
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
-        if 'admin' not in [role.name for role in user.role]:
+        if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
-            request_data = updateparser.parse_args()
+            request_data = createparser.parse_args()
             name = request_data.get('name')
-            description = request_data.get('description')
-            Roles.add(Roles(name=name, description=description))
-            [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('roleinfo/desc')
-            ]
-            return {'code': 0, 'message': '创建角色成功', 'success': True}
+            if Roles.query.filter_by(name=name).first():
+                return {'code': 1, 'message': '角色名已存在', 'success': False}
+            else:
+                description = request_data.get('description')
+                Roles.add(Roles(name=name, description=description))
+                [
+                    redis.delete(key) for key in redis.keys()
+                    if key.decode('utf-8').startswith('roleinfo/desc')
+                ]
+                return {'code': 0, 'message': '创建角色成功', 'success': True}
 
 
-deleteparser = reqparse.RequestParser()
-deleteparser.add_argument('roleid', type=int, nullable=False, required=True, help='角色ID不能为空')
-
+deleteparser = reqparse.RequestParser(bundle_errors=True)
+deleteparser.add_argument('roleid', type=positive, nullable=False, required=True, help='角色ID不能为空')
+deleteparser.add_argument('X-CSRFToken',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='csrf_token不能为空')
+deleteparser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @role_ns.route('/delete')
-@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 100/day.")
-class Delete(Resource):
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class DeleteRole(Resource):
     '''
     Author: 邵佳泓
     msg: 删除角色
@@ -213,7 +337,7 @@ class Delete(Resource):
         '''
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
-        if 'admin' not in [role.name for role in user.role]:
+        if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
             request_data = deleteparser.parse_args()
@@ -229,15 +353,27 @@ class Delete(Resource):
                 return {'code': 2, 'message': '系统中有用户属于当前角色，不可删除', 'success': False}
 
 
-banparser = reqparse.RequestParser()
-banparser.add_argument('roleid', type=int, nullable=False, required=True, help='角色ID不能为空')
-
+banparser = reqparse.RequestParser(bundle_errors=True)
+banparser.add_argument('roleid', type=positive, nullable=False, required=True, help='角色ID不能为空')
+banparser.add_argument('X-CSRFToken',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='csrf_token不能为空')
+banparser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @role_ns.route('/ban')
-@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 100/day.")
-class Ban(Resource):
+@role_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@role_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@role_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                  standardmodel)
+class BanRole(Resource):
     '''
     Author: 邵佳泓
     msg: 角色限制管理
@@ -255,12 +391,12 @@ class Ban(Resource):
         '''
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
-        if 'admin' not in [role.name for role in user.role]:
+        if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
             request_data = deleteparser.parse_args()
             roleid = request_data.get('roleid')
-            role = Users.query.filter_by(roleid=roleid)
+            role = Roles.query.filter_by(roleid=roleid)
             [
                 redis.delete(key) for key in redis.keys()
                 if key.decode('utf-8').startswith('roleinfo')

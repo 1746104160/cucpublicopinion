@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:51:20
+LastEditTime: 2022-07-09 12:08:37
 FilePath: /server/app/managers/auth_manager/login_manager.py
 '''
 import binascii
@@ -12,6 +12,7 @@ import datetime
 from http import HTTPStatus
 from flask import request
 from flask_restx import Namespace, Resource, fields, reqparse
+from flask_restx.inputs import regex
 from flask_jwt_extended.utils import create_access_token
 from sqlalchemy import or_
 from app.utils.redisdb import redis
@@ -19,8 +20,10 @@ from app.utils.mysqldb import db
 from app.model import Users
 from app.utils.limiter import limiter
 from app.utils.aes import decrypt
+from app.managers.model import standardmodel
 
 login_ns = Namespace('login', description='登录')
+login_ns.models[standardmodel.name] = standardmodel
 data_model = login_ns.model('logindata', {
     "accessToken": fields.String(required=True, description='accessToken'),
 })
@@ -45,7 +48,7 @@ parser.add_argument('password',
                     required=True,
                     help='密码不能为空')
 parser.add_argument('captcha',
-                    type=str,
+                    type=regex(pattern=r'^\S{4}$'),
                     location='json',
                     nullable=False,
                     required=True,
@@ -60,9 +63,10 @@ parser.add_argument('X-CSRFToken',
 
 
 @login_ns.route('')
-@login_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@login_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@login_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@login_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@login_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@login_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
+                   standardmodel)
 class LoginSystem(Resource):
     '''
     Author: 邵佳泓

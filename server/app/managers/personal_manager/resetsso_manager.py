@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 12:59:31
+LastEditTime: 2022-07-09 12:38:55
 FilePath: /server/app/managers/personal_manager/resetsso_manager.py
 '''
 import binascii
@@ -12,42 +12,43 @@ from http import HTTPStatus
 
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restx import Namespace, Resource, reqparse
+from flask_restx.inputs import regex,email
 from app.model import Users
 from app.utils.redisdb import redis
 from app.utils.limiter import limiter
 from app.utils.aes import decrypt
 from app.utils.ssoauth import loginsso
-from app.managers.personal_manager.model import model
+from app.managers.model import standardmodel as model
 
 resetsso_ns = Namespace('resetsso', description='重置绑定中传SSO账号')
 resetsso_ns.models[model.name] = model
 parser = reqparse.RequestParser(bundle_errors=True)
 parser.add_argument('account',
-                    type=str,
+                    type=email(check=True),
                     location='json',
                     nullable=False,
                     required=True,
                     help='账号不能为空')
 parser.add_argument('verify',
-                    type=str,
+                    type=regex(pattern=r'\S{6}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='验证凭据不能为空')
 parser.add_argument('cucaccount',
-                    type=str,
+                    type=regex(pattern=r'\S{4,15}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='中传账号不能为空')
 parser.add_argument('password',
-                    type=str,
+                    type=regex(pattern=r'\S{24}$'),
                     location='json',
                     nullable=False,
                     required=True,
                     help='中传密码不能为空')
 parser.add_argument('captcha',
-                    type=str,
+                    type=regex(pattern=r'\S{4}$'),
                     location='json',
                     nullable=False,
                     required=True,
@@ -59,12 +60,17 @@ parser.add_argument('X-CSRFToken',
                     nullable=False,
                     required=True,
                     help='csrf_token不能为空')
-
+parser.add_argument('Authorization',
+                    type=str,
+                    location='headers',
+                    nullable=False,
+                    required=True,
+                    help='Authorization不能为空')
 
 @resetsso_ns.route('')
-@resetsso_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
-@resetsso_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
-@resetsso_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast: 3/minute, 50/day.")
+@resetsso_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
+@resetsso_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
+@resetsso_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", model)
 class ResetSSO(Resource):
     '''
     Author: 邵佳泓
@@ -106,7 +112,7 @@ class ResetSSO(Resource):
         elif redisemail.decode('utf-8') != emailcode:
             return {'code': 5, 'message': '邮件验证码错误', 'success': False}
         elif not loginsso(cucaccount, password):
-            return {'code': 6, 'message': '中传SSO登录失败', 'success': False}
+            return {'code': 6, 'message': 'CUC用户名或密码错误', 'success': False}
         else:
             user = Users.query.filter_by(userid=get_jwt_identity()).first()
             [

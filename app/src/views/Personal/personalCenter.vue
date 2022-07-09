@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 08:54:04
+ * @LastEditTime: 2022-07-09 14:19:19
  * @FilePath: /app/src/views/Personal/personalCenter.vue
 -->
 
@@ -153,32 +153,37 @@ export default defineComponent({
 })
 </script>
 <style lang="stylus" scoped>
-.page-container{
-      .info{
-        text-align: left;
+.page-container {
+  .info {
+    text-align: left;
     padding-left: 20px;
     margin-bottom: 20px;
     font-size: 12px;
-    }
+  }
 }
-.box-card{
-  p{
-    text-align :right;
+
+.box-card {
+  p {
+    text-align: right;
   }
+
   .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
-  margin-top:14px;
-  .account-avatar{
+
+  margin-top: 14px;
+
+  .account-avatar {
     text-align: center;
-    margin-bottom :24px;
-    .avatar{
-      width:105px;
-      height:105px;
-      margin-bottom :20px;
-      border-radius:50%;
+    margin-bottom: 24px;
+
+    .avatar {
+      width: 105px;
+      height: 105px;
+      margin-bottom: 20px;
+      border-radius: 50%;
     }
   }
 }
