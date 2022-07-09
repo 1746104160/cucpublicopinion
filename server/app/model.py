@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 10:36:27
+LastEditTime: 2022-07-10 01:02:02
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -161,7 +161,7 @@ class News(db.Model):
         nullable=False,
     )
     author = db.Column(db.String(50), nullable=False)
-    articleSource = db.Column(db.String(20), nullable=False)
+    articleSource = db.Column(db.String(50), nullable=False)
     article_url = db.Column(db.String(255), nullable=False)
     # fav = db.relationship('Favorites', uselist=False, back_populates="news")
     # comments = db.relationship('Comments', backref='news', lazy='dynamic')

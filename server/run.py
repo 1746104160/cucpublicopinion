@@ -4,11 +4,14 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 21:46:27
+LastEditTime: 2022-07-10 01:01:09
 FilePath: /server/run.py
 '''
 import datetime
 from flask_script import Manager
+from sqlalchemy import create_engine
+from instance.config import SQLALCHEMY_DATABASE_URI
+import pandas as pd
 from app import create_app
 from app.utils.mysqldb import db
 from app.model import Users, Roles
@@ -23,10 +26,13 @@ def create_db():
     Author: 邵佳泓
     msg: 创建数据库
     '''
+    engine = create_engine(SQLALCHEMY_DATABASE_URI)
     db.drop_all()
     db.create_all()
     standard = Roles(name='standard', description='只拥有主页可视化大屏的权限')
-    vip = Roles(name='vip', description='拥有新闻管理的权限', authedroutes="['/personal','/news','/security','/log']")
+    vip = Roles(name='vip',
+                description='拥有新闻管理的权限',
+                authedroutes="['/personal','/news','/security','/log']")
     admin = Roles(name='admin',
                   description='拥有系统的全部权限',
                   authedroutes="['/personal','/news','/security','/log','/dashboard']")
@@ -73,6 +79,7 @@ def create_db():
                      description=f"test{i}用户" if i < 5 else None)
         user.set_password("Aa123456")
         Users.add(user)
+        pd.read_csv('spider.csv').to_sql('news',engine,if_exists='append',index=False)
     print('db create ok!')
 
 

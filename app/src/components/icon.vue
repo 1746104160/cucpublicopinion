@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:30:53
+ * @LastEditTime: 2022-07-10 01:34:17
  * @FilePath: /app/src/components/icon.vue
 -->
 <template>
@@ -209,7 +209,11 @@ export default defineComponent({
         'ic ic-tools',
         'ic ic-int',
         'ic ic-commodity',
-        'ic ic-zhtn'
+        'ic ic-zhtn',
+        'ic ic-user-fill',
+        'ic ic-user',
+        'ic ic-setting-fill',
+        'ic ic-setting'
       ],
       data: [''],
       key: ''

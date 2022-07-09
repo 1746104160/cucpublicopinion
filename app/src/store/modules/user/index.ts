@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:34:06
+ * @LastEditTime: 2022-07-10 00:14:34
  * @FilePath: /app/src/store/modules/user/index.ts
  */
 
@@ -22,15 +22,17 @@ const userModule: Module<userStateTypes, RootStateTypes> = {
     authedRoutes: constantRoutes // 权限路由
   },
   mutations: {
+    /* 设置认证路由。 */
     setAuthedRoutes: (state: userStateTypes, routes) => {
       state.authedRoutes = constantRoutes.concat(routes)
     },
+    /* 在会话存储中设置用户信息的突变。 */
     setUserInfo: (state: userStateTypes, userinfo) => {
       setItem('userinfo', JSON.stringify(userinfo))
     }
   },
   actions: {
-    // 异步接口请求，动态添加路由
+    /* 用于获取用户信息和用户可以访问的路由的函数。 */
     getUserInfo ({ commit }) {
       // 后端根据JWT，查询授权菜单
       Service.getuserinfo().then((res) => {
@@ -59,6 +61,10 @@ const userModule: Module<userStateTypes, RootStateTypes> = {
         })
       })
     },
+    /**
+     * 它从会话存储中获取路由并将它们添加到路由器。
+     * @param  - `commit`：存储的提交方法。
+     */
     getRoutes ({ commit }) {
       const Routes = JSON.parse(sessionStorage.getItem('Routes') as string)
       const authedRoutes: RouteRecordRaw[] = []

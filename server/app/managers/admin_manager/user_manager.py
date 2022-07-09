@@ -4,10 +4,9 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 23:34:27
+LastEditTime: 2022-07-09 23:45:20
 FilePath: /server/app/managers/admin_manager/user_manager.py
 '''
-import base64
 from http import HTTPStatus
 import time
 import datetime
@@ -74,17 +73,17 @@ pagination_reqparser.add_argument('order',
                                   choices=['ascending', 'descending'],
                                   help='排序方式')
 pagination_reqparser.add_argument('Authorization',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='Authorization不能为空')
+                                  type=str,
+                                  location='headers',
+                                  nullable=False,
+                                  required=True,
+                                  help='Authorization不能为空')
+
 
 @user_ns.route('/userinfo')
 @user_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @user_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
-@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
-                  standardmodel)
+@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
 class UserInfo(Resource):
     '''
     Author: 邵佳泓
@@ -147,8 +146,8 @@ class UserInfo(Resource):
                 'last_login_ip':
                 user.last_login_ip,
                 'role': [{
-                    'name':role.name,
-                    'description':role.description
+                    'name': role.name,
+                    'description': role.description
                 } for role in user.role]
             } for user in users if 'admin' not in [role.name for role in user.role]]
             pipe = redis.pipeline()
@@ -165,6 +164,7 @@ class UserInfo(Resource):
                 }
             }
 
+
 roleinfoparser = reqparse.RequestParser(bundle_errors=True)
 roleinfoparser.add_argument('Authorization',
                             type=str,
@@ -172,17 +172,19 @@ roleinfoparser.add_argument('Authorization',
                             nullable=False,
                             required=True,
                             help='Authorization不能为空')
+
+
 @user_ns.route('/roles')
 @user_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @user_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
-@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
-                  standardmodel)
+@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
 class AllRoleInfo(Resource):
     '''
     Author: 邵佳泓
     msg: 返回全部角色
     '''
     decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+
     @user_ns.marshal_with(roles_model)
     @user_ns.expect(roleinfoparser)
     @jwt_required()
@@ -199,14 +201,18 @@ class AllRoleInfo(Resource):
         else:
             roles = Roles.query.all()
             return {
-                'code': 0,
-                'message': '获取角色信息成功',
-                'success': True,
+                'code':
+                0,
+                'message':
+                '获取角色信息成功',
+                'success':
+                True,
                 'data': [{
-                    'name':role.name,
-                    'description':role.description
+                    'name': role.name,
+                    'description': role.description
                 } for role in roles if role.name != 'admin']
             }
+
 
 updateparser = reqparse.RequestParser(bundle_errors=True)
 updateparser.add_argument('userid', type=positive, nullable=False, required=True, help='用户ID不能为空')
@@ -217,23 +223,23 @@ updateparser.add_argument('role',
                           help='角色不能为空',
                           action='append')
 updateparser.add_argument('X-CSRFToken',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='csrf_token不能为空')
+                          type=str,
+                          location='headers',
+                          nullable=False,
+                          required=True,
+                          help='csrf_token不能为空')
 updateparser.add_argument('Authorization',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='Authorization不能为空')
+                          type=str,
+                          location='headers',
+                          nullable=False,
+                          required=True,
+                          help='Authorization不能为空')
+
 
 @user_ns.route('/update')
 @user_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @user_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
-@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
-                  standardmodel)
+@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
 class UpdateUser(Resource):
     '''
     Author: 邵佳泓
@@ -271,23 +277,23 @@ class UpdateUser(Resource):
 deleteparser = reqparse.RequestParser(bundle_errors=True)
 deleteparser.add_argument('userid', type=positive, nullable=False, required=True, help='用户ID不能为空')
 deleteparser.add_argument('X-CSRFToken',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='csrf_token不能为空')
+                          type=str,
+                          location='headers',
+                          nullable=False,
+                          required=True,
+                          help='csrf_token不能为空')
 deleteparser.add_argument('Authorization',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='Authorization不能为空')
+                          type=str,
+                          location='headers',
+                          nullable=False,
+                          required=True,
+                          help='Authorization不能为空')
+
 
 @user_ns.route('/delete')
 @user_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @user_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
-@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
-                  standardmodel)
+@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
 class DeleteUser(Resource):
     '''
     Author: 邵佳泓
@@ -323,23 +329,23 @@ class DeleteUser(Resource):
 banparser = reqparse.RequestParser(bundle_errors=True)
 banparser.add_argument('userid', type=positive, nullable=False, required=True, help='用户ID不能为空')
 banparser.add_argument('X-CSRFToken',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='csrf_token不能为空')
+                       type=str,
+                       location='headers',
+                       nullable=False,
+                       required=True,
+                       help='csrf_token不能为空')
 banparser.add_argument('Authorization',
-                    type=str,
-                    location='headers',
-                    nullable=False,
-                    required=True,
-                    help='Authorization不能为空')
+                       type=str,
+                       location='headers',
+                       nullable=False,
+                       required=True,
+                       help='Authorization不能为空')
+
 
 @user_ns.route('/ban')
 @user_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @user_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
-@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
-                  standardmodel)
+@user_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
 class BanUser(Resource):
     '''
     Author: 邵佳泓

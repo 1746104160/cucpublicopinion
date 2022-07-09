@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:32:49
+ * @LastEditTime: 2022-07-10 01:36:48
  * @FilePath: /app/src/router/index.ts
  */
 
@@ -105,7 +105,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     redirect: '/dashboard/usersedit',
     meta: {
       title: '系统管理',
-      icon: 'ic ic-group-fill'
+      icon: 'ic ic-setup-fill'
     },
     children: [
       {
@@ -114,7 +114,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         component: () => import(/* webpackChunkName: "usersManage" */ '@/views/Dashboard/usersManage.vue'),
         meta: {
           title: '用户管理',
-          icon: 'ic ic-group-fill'
+          icon: 'ic ic-people-fill'
         }
       },
       {
@@ -124,6 +124,44 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         meta: {
           title: '角色管理',
           icon: 'ic ic-group-fill'
+        }
+      }
+    ]
+  },
+  {
+    path: '/news',
+    component: layout,
+    redirect: '/news/usersedit',
+    meta: {
+      title: '新闻管理',
+      icon: 'ic ic-document-fill'
+    },
+    children: [
+      {
+        path: '/news/newsmanage',
+        name: 'newsManage',
+        component: () => import(/* webpackChunkName: "newsManage" */ '@/views/News/newsManage.vue'),
+        meta: {
+          title: '新闻管理',
+          icon: 'ic ic-document-fill'
+        }
+      },
+      {
+        path: '/news/newscreate',
+        name: 'newsCreate',
+        component: () => import(/* webpackChunkName: "newsCreate" */ '@/views/News/newsCreate.vue'),
+        meta: {
+          title: '新闻导入',
+          icon: 'ic ic-document-fill'
+        }
+      },
+      {
+        path: '/news/newsupdate',
+        name: 'newsUpdate',
+        component: () => import(/* webpackChunkName: "newsUpdate" */ '@/views/News/newsUpdate.vue'),
+        meta: {
+          title: '新闻修改',
+          icon: 'ic ic-document-fill'
         }
       }
     ]
