@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:30:19
+ * @LastEditTime: 2022-07-11 11:24:28
  * @FilePath: /app/src/components/Hamburger/Hamburger.vue
 -->
 /* eslint-disable max-len */
@@ -46,13 +46,13 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
-.hamburger
+<style lang="scss" scoped>
+.hamburger{
   display: inline-block;
   vertical-align: middle;
   width: 20px;
   height: 20px;
-
+}
 .hamburger.is-active {
   transform: rotate(180deg);
 }

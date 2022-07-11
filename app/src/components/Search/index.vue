@@ -4,16 +4,19 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:30:33
+ * @LastEditTime: 2022-07-11 11:24:48
  * @FilePath: /app/src/components/Search/index.vue
 -->
 <template>
   <div id="Serach" class="search-container">
-    <el-select v-model="value" :remote-method="querySearch" filterable default-first-option remote placeholder="请输入关键字搜索" @change="handleChange">
+    <el-select v-model="value" :remote-method="querySearch" filterable default-first-option remote
+      placeholder="请输入关键字搜索" @change="handleChange">
       <template #prefix>
-        <el-icon class="el-input__icon"><search /></el-icon>
+        <el-icon class="el-input__icon">
+          <search />
+        </el-icon>
       </template>
-      <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')"> </el-option>
+      <el-option v-for="item of options.values()" :key="item.path" :value="item" :label="item.title.join(' > ')"> </el-option>
     </el-select>
   </div>
 </template>
@@ -68,7 +71,10 @@ export default defineComponent({
     }
     const querySearch = (query: string) => {
       if (query !== '') {
-        state.options = fuse.value.search(query)
+        state.options = []
+        for (const item of fuse.value.search(query)) {
+          state.options.push(item.item)
+        }
       } else {
         state.options = []
       }
@@ -121,7 +127,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .search-container{
   :deep(.el-input__inner) {
     border-radius: 0;

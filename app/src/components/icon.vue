@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-10 01:34:17
+ * @LastEditTime: 2022-07-11 11:24:02
  * @FilePath: /app/src/components/icon.vue
 -->
 <template>
@@ -239,7 +239,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 
 .icon-panel {
   padding: 1rem;

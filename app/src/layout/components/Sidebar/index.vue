@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:31:53
+ * @LastEditTime: 2022-07-11 11:24:54
  * @FilePath: /app/src/layout/components/Sidebar/index.vue
 -->
 
@@ -62,9 +62,11 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
-.el-menu-vertical:not(.el-menu--collapse)
-  width 200px
-  min-height 400px
-  text-align left
+<style lang="scss" scoped>
+.el-menu-vertical:not(.el-menu--collapse){
+  width:200px;
+  min-height:400px;
+  text-align:left;
+}
+
 </style>

@@ -4,12 +4,11 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:33:46
+ * @LastEditTime: 2022-07-10 13:13:43
  * @FilePath: /app/src/store/modules/tabs/types.ts
  */
 
 export default interface tabStateTypes {
   tabsOption: [{ route: String; name: String; title: String }]
   currentIndex: String
-  breadcrumbList: any[]
 }

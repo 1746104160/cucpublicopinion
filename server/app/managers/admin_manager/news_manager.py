@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-10 01:45:43
+LastEditTime: 2022-07-11 13:01:13
 FilePath: /server/app/managers/admin_manager/news_manager.py
 '''
 from http import HTTPStatus
@@ -43,7 +43,17 @@ model = news_ns.model(
         'success': fields.Boolean(required=True, description='是否成功'),
         'data': fields.Nested(data_model, description='数据')
     })
-
+content_data_model = news_ns.model(
+    'contentdatamodel', {
+        'content': fields.String(required=True, description='新闻内容')
+    })
+content_model = news_ns.model(
+    'contentmodel', {
+        'code': fields.Integer(required=True, description='状态码'),
+        'message': fields.String(required=True, description='状态信息'),
+        'success': fields.Boolean(required=True, description='是否成功'),
+        'data': fields.Nested(content_data_model, description='数据')
+    })
 pagination_reqparser = reqparse.RequestParser(bundle_errors=True)
 pagination_reqparser.add_argument('page', location='args', type=positive, default=1, help='页码')
 pagination_reqparser.add_argument('size',
@@ -57,6 +67,11 @@ pagination_reqparser.add_argument('order',
                                   type=regex(pattern='^((ascending)|(descending)){1}$'),
                                   default='ascending',
                                   choices=['ascending', 'descending'],
+                                  help='排序方式')
+pagination_reqparser.add_argument('keyword',
+                                  location='args',
+                                  type=str,
+                                  default='',
                                   help='排序方式')
 pagination_reqparser.add_argument('Authorization',
                                   type=str,
@@ -90,11 +105,12 @@ class NewsInfo(Resource):
         page = request_data.get('page')
         size = request_data.get('size')
         order = request_data.get('order')
+        keyword = request_data.get('keyword')
         userid = get_jwt_identity()
         user = Users.query.filter_by(userid=userid).first()
         expire_time = int(time.time()) + 86400
-        key = '/'.join(['newsinfo', order, str(page), str(size)])
-        length = News.query.count()
+        key = '/'.join(['newsinfo', order, str(page), str(size), keyword])
+        length = News.query.count() if keyword == '' else News.query.filter(News.title.like('%' + keyword + '%')).count()
         if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
         elif (bytedata := redis.get(key)) and page != length // size + 1:
@@ -109,7 +125,7 @@ class NewsInfo(Resource):
                 }
             }
         else:
-            allnews = News.query.order_by(News.newsid.asc() if order ==
+            allnews = News.query.filter(News.title.like(f'%{keyword}%')).order_by(News.newsid.asc() if order ==
                                           'ascending' else News.newsid.desc()).paginate(
                                               page, size, False).items
             data = [{
@@ -134,15 +150,90 @@ class NewsInfo(Resource):
                     'total': length
                 }
             }
+newsdetailparser = reqparse.RequestParser(bundle_errors=True)
+newsdetailparser.add_argument('newsid',
+                                location='args',
+                                type=positive,
+                                required=True,
+                                help='新闻id不能为空')
+newsdetailparser.add_argument('Authorization',
+                                type=str,
+                                location='headers',
+                                nullable=False,
+                                required=True,
+                                help='Authorization不能为空')
+@news_ns.route('/content')
+@news_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
+@news_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", standardmodel)
+@news_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.", standardmodel)
+class NewsContent(Resource):
+    '''
+    Author: 邵佳泓
+    msg: 获取新闻正文
+    '''
+    decorators = [limiter.limit('10/minute'), limiter.limit('500/day')]
 
-
+    @news_ns.expect(newsdetailparser)
+    @news_ns.marshal_with(content_model)
+    @jwt_required()
+    def get(self):
+        '''
+        Author: 邵佳泓
+        msg: 获取新闻正文
+        '''
+        request_data = newsdetailparser.parse_args()
+        newsid = request_data.get('newsid')
+        userid = get_jwt_identity()
+        user = Users.query.filter_by(userid=userid).first()
+        if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
+            return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
+        else:
+            news = News.query.filter_by(newsid=newsid).first()
+            return {
+                'code': 0,
+                'message': '获取新闻正文成功',
+                'success': True,
+                'data': {
+                    'content': news.content
+                }
+            }
 updateparser = reqparse.RequestParser(bundle_errors=True)
 updateparser.add_argument('newsid', type=positive, nullable=False, required=True, help='新闻ID不能为空')
-updateparser.add_argument('content',
-                          type=regex(pattern=r'^\S+$'),
+updateparser.add_argument('title',
+                          type=regex(pattern=r'\S+'),
                           nullable=False,
                           required=True,
-                          help='内容不能为空')
+                          help='新闻标题不能为空')
+updateparser.add_argument('content',
+                          type=regex(pattern=r'\S+'),
+                          nullable=False,
+                          required=True,
+                          help='新闻内容不能为空')
+updateparser.add_argument('publish_time',
+                          type=datetime_from_iso8601,
+                          nullable=False,
+                          required=True,
+                          help='发布时间不能为空')
+updateparser.add_argument('spider_time',
+                          type=datetime_from_iso8601,
+                          nullable=False,
+                          required=True,
+                          help='爬取时间不能为空')
+updateparser.add_argument('author',
+                          type=regex(pattern=r'\S+'),
+                          nullable=False,
+                          required=True,
+                          help='作者不能为空')
+updateparser.add_argument('articleSource',
+                          type=regex(pattern=r'\S+'),
+                          nullable=False,
+                          required=True,
+                          help='文章来源不能为空')
+updateparser.add_argument('article_url',
+                          type=URL(check=True),
+                          nullable=False,
+                          required=True,
+                          help='文章链接不能为空')
 updateparser.add_argument('X-CSRFToken',
                           type=str,
                           location='headers',
@@ -184,13 +275,27 @@ class UpdateNews(Resource):
         else:
             request_data = updateparser.parse_args()
             newsid = request_data.get('newsid')
+            title = request_data.get('title')
             content = request_data.get('content')
-            News.query.filter_by(newsid=newsid).update({'content': content})
-            [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('newsinfo')
-            ]
-            return {'code': 0, 'message': '更新新闻数据成功', 'success': True}
+            publish_time = request_data.get('publish_time')
+            spider_time = request_data.get('spider_time')
+            author = request_data.get('author')
+            article_source = request_data.get('articleSource')
+            article_url = request_data.get('article_url')
+            news = News.query.filter_by(newsid=newsid)
+            if news.first():
+                news.update({
+                    'title': title,
+                    'content': content,
+                    'publish_time': publish_time,
+                    'spider_time': spider_time,
+                    'author': author,
+                    'articleSource': article_source,
+                    'article_url': article_url
+                })
+                return {'code': 0, 'message': '更新新闻成功', 'success': True}
+            else:
+                return {'code': 1, 'message': '新闻不存在', 'success': False}
 
 
 createparser = reqparse.RequestParser(bundle_errors=True)

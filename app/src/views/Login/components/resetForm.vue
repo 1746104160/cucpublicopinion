@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:20:16
+ * @LastEditTime: 2022-07-11 11:26:03
  * @FilePath: /app/src/views/Login/components/resetForm.vue
 -->
 
@@ -257,7 +257,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-container {
   width: 100%;
 

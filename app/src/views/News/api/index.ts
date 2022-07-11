@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-10 00:48:35
+ * @LastEditTime: 2022-07-11 12:53:27
  * @FilePath: /app/src/views/News/api/index.ts
  */
 
@@ -12,6 +12,7 @@ import request from '@/utils/request'
 
 const newsApi = {
   getallnewsinfo: 'admin/news/newsinfo',
+  getnewscontent: 'admin/news/content',
   updatenewsinfo: 'admin/news/update',
   createnews: 'admin/news/create',
   deletenews: 'admin/news/delete',
@@ -22,9 +23,25 @@ class Service {
   /**
    * @description GET 获取新闻信息
    */
-  static getAllNewsInfo (page:number, size:number, order:string) {
+  static getAllNewsInfo (page:number, size:number, order:string, keyword:string) {
     return request({
-      url: `${newsApi.getallnewsinfo}?page=${page}&size=${size}&order=${order}`,
+      url: `${newsApi.getallnewsinfo}?page=${page}&size=${size}&order=${order}&keyword=${keyword}`,
+      method: 'GET',
+      json: true
+    }).then((res) => {
+      if (res.code === 0) {
+        return Promise.resolve(res)
+      }
+      return Promise.reject(res)
+    })
+  }
+
+  /**
+   * @description GET 获取新闻信息
+   */
+  static getNewsContent (newsid:number) {
+    return request({
+      url: `${newsApi.getnewscontent}?newsid=${newsid}`,
       method: 'GET',
       json: true
     }).then((res) => {

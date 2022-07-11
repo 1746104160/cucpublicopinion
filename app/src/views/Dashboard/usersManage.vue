@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 23:35:35
+ * @LastEditTime: 2022-07-11 08:30:45
  * @FilePath: /app/src/views/Dashboard/usersManage.vue
 -->
 <template>
@@ -135,7 +135,7 @@
     </el-dialog>
   </div>
 </template>
-<script lang="tsx">
+<script lang="ts">
 import {
   ElMessage,
   ElMessageBox

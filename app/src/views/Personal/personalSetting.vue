@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:28:49
+ * @LastEditTime: 2022-07-11 11:26:39
  * @FilePath: /app/src/views/Personal/personalSetting.vue
 -->
 
@@ -311,7 +311,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .PersonalSetting {
   margin-top: 20px;
 
@@ -363,9 +363,6 @@ export default defineComponent({
     flex-direction: row;
     justify-content: space-around;
     align-items: flex-start;
-
-    .form-info {
-    }
 
     .avatar {
       display: flex;

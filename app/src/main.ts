@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:27:56
+ * @LastEditTime: 2022-07-10 11:32:26
  * @FilePath: /app/src/main.ts
  */
 import { createApp } from 'vue'
@@ -17,11 +17,12 @@ import router from './router/index'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/index.css'
 import '@/styles/index.scss'
+import DataVVue3 from '@kjgl77/datav-vue3'
 if (sessionStorage.getItem('Routes')) {
   store.dispatch('userModule/getRoutes')
 }
 // 链式注册插件
-const app = createApp(App).use(store, key).use(Vue3Storage).use(router).use(ElementPlus, { locale })
+const app = createApp(App).use(store, key).use(Vue3Storage).use(router).use(ElementPlus, { locale }).use(DataVVue3)
 // 现在所有的导航都是异步的，等路由ready以后再进行挂载组件；
 router.isReady().then(() => app.mount('#app'))
 

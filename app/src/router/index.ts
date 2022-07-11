@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-10 01:36:48
+ * @LastEditTime: 2022-07-11 12:44:24
  * @FilePath: /app/src/router/index.ts
  */
 
@@ -160,8 +160,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         name: 'newsUpdate',
         component: () => import(/* webpackChunkName: "newsUpdate" */ '@/views/News/newsUpdate.vue'),
         meta: {
-          title: '新闻修改',
-          icon: 'ic ic-document-fill'
+          hidden: true,
+          title: '新闻修改'
         }
       }
     ]

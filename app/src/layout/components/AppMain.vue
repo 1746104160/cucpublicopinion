@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:31:46
+ * @LastEditTime: 2022-07-10 13:19:40
  * @FilePath: /app/src/layout/components/AppMain.vue
 -->
 
@@ -29,7 +29,7 @@
   </section>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from '@/store/index'
 import { TabsPaneContext, TabPanelName } from 'element-plus'
@@ -38,7 +38,10 @@ export default defineComponent({
   setup () {
     // store 中获取当前路由以及所有的路由对象；
     const store = useStore()
-    const tabsOption = ref(store.getters['tabModule/getTabsOption'])
+    const tabsOption = computed({
+      get: () => { return store.getters['tabModule/getTabsOption'] },
+      set: (val) => { return val }
+    })
     const currentIndex = computed({
       get: () => { return store.getters['tabModule/getCurrentIndex'] },
       set: (val) => { store.commit('tabModule/SET_TAB', val) }
@@ -64,7 +67,6 @@ export default defineComponent({
       // eslint-disable-next-line no-console
       currentIndex.value = tab.paneName
       router.push({ path: tab.paneName as string })
-      router.go(0)
     }
     return {
       tabsOption,

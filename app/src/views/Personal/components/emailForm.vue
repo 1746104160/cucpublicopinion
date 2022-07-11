@@ -399,7 +399,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-container {
   width: 100%;
 

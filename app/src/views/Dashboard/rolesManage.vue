@@ -92,7 +92,7 @@
     </el-dialog>
   </div>
 </template>
-<script lang="tsx">
+<script lang="ts">
 import {
   ElMessage,
   ElMessageBox

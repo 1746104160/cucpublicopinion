@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:33:40
+ * @LastEditTime: 2022-07-10 13:21:44
  * @FilePath: /app/src/store/modules/tabs/index.ts
  */
 
@@ -22,8 +22,7 @@ const tabModule: Module<tabStateTypes, RootStateTypes> = {
         name: 'home'
       }
     ],
-    currentIndex: '/home',
-    breadcrumbList: []
+    currentIndex: '/home'
   },
   mutations: {
     ADD_TAB: (state: tabStateTypes, data: { route: string; name: string; title: String }) => {

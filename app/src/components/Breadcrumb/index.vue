@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-10 00:03:27
+ * @LastEditTime: 2022-07-11 11:24:12
  * @FilePath: /app/src/components/Breadcrumb/index.vue
 -->
 <template>
@@ -64,7 +64,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .navbar .breadcrumb-container {
   display: inline-block;
   font-size: 14px;

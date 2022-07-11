@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:21:29
+ * @LastEditTime: 2022-07-11 12:04:14
  * @FilePath: /app/src/utils/validate.ts
  */
 
@@ -57,4 +57,11 @@ export function validEmailCaptcha (str: string): boolean {
  */
 export function validCUCUsername (str: string): boolean {
   return /^[1-9][0-9]{3,}$/.test(str)
+}
+/**
+ * @param {string} str
+ * @returns {Boolean}
+ */
+export function validURL (str: string): boolean {
+  return /^((http)|(https)){1}:\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/.test(str)
 }

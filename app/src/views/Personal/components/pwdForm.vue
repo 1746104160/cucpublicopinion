@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:19:42
+ * @LastEditTime: 2022-07-11 11:26:27
  * @FilePath: /app/src/views/Personal/components/pwdForm.vue
 -->
 
@@ -401,7 +401,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus" scoped>
+<style lang="scss" scoped>
 .form-container {
   width: 100%;
 

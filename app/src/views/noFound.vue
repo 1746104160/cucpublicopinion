@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:19:49
+ * @LastEditTime: 2022-07-11 11:25:24
  * @FilePath: /app/src/views/noFound.vue
 -->
 <template>
@@ -36,7 +36,7 @@ export default defineComponent({
 })
 </script>
 
-<style rel="stylesheet/scss" lang="stylus" scoped>
+<style rel="stylesheet/scss" lang="scss" scoped>
 .wscn-http404-container {
   transform: translate(-50%, -50%);
   position: absolute;
