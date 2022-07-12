@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 00:09:58
+ * @LastEditTime: 2022-07-13 01:09:39
  * @FilePath: /app/src/views/Personal/components/emailForm.vue
 -->
 
@@ -199,8 +199,7 @@ export default defineComponent({
       verifyRef.value.validate((valid: any) => {
         if (valid) {
           if (
-            parseInt(state.verifyForm.account) !==
-            JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount
+            state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount
           ) {
             getNextStepFailure()
             return false

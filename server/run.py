@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-13 00:28:11
+LastEditTime: 2022-07-13 01:06:30
 FilePath: /server/run.py
 '''
 import datetime
@@ -49,7 +49,7 @@ def create_db():
     user.set_password("Aa123456")
     Users.add(user)
     user = Users(name="normal",
-                 email="2019302120001@cuc.edu.cn",
+                 email="s2019302120001@cuc.edu.cn",
                  role=[standard],
                  created_on=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                  last_login=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -110,7 +110,7 @@ def update_db():
     user.set_password("Aa123456")
     Users.add(user)
     user = Users(name="normal",
-                 email="2019302120001@cuc.edu.cn",
+                 email="s2019302120001@cuc.edu.cn",
                  role=[standard],
                  created_on=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                  last_login=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 12:04:14
+ * @LastEditTime: 2022-07-13 00:41:32
  * @FilePath: /app/src/utils/validate.ts
  */
 
@@ -28,7 +28,7 @@ export function validUsername (str: string): boolean {
  * @returns {Boolean}
  */
 export function validPassword (str: string): boolean {
-  return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,12}$/.test(str)
+  return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,12}$/.test(str)
 }
 /**
  * @param {string} str

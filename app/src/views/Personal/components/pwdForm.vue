@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 00:10:18
+ * @LastEditTime: 2022-07-13 01:11:20
  * @FilePath: /app/src/views/Personal/components/pwdForm.vue
 -->
 
@@ -199,7 +199,7 @@ export default defineComponent({
       verifyRef.value.validate((valid: any) => {
         if (valid) {
           if ((selectedAccType.value === 'email' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).email) ||
-          (selectedAccType.value === 'cuc' && parseInt(state.verifyForm.account) !== JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount)) {
+          (selectedAccType.value === 'cuc' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount)) {
             getNextStepFailure()
             return false
           } else {
