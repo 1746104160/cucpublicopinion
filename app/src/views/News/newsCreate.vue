@@ -55,7 +55,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ElMessage, FormRules } from 'element-plus'
+import { dayjs, ElMessage, FormRules } from 'element-plus'
 import { defineComponent, toRefs, reactive, ref } from 'vue'
 import { validURL } from '@/utils/validate'
 import Service from './api'
@@ -94,6 +94,8 @@ export default defineComponent({
     })
     const submitForm = () => {
       formRef.value.validate((valid: any): boolean => {
+        state.form.publish_time = dayjs(state.form.publish_time).format()
+        state.form.spider_time = dayjs(state.form.spider_time).format()
         if (valid) {
           Service.createNews(state.form).then((res: any) => {
             state.form = {

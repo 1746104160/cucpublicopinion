@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 21:43:33
+LastEditTime: 2022-07-11 23:08:19
 FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
 from http import HTTPStatus
@@ -394,7 +394,7 @@ class BanRole(Resource):
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
-            request_data = deleteparser.parse_args()
+            request_data = banparser.parse_args()
             roleid = request_data.get('roleid')
             role = Roles.query.filter_by(roleid=roleid)
             [

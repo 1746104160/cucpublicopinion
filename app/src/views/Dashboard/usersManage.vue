@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 08:30:45
+ * @LastEditTime: 2022-07-11 22:40:40
  * @FilePath: /app/src/views/Dashboard/usersManage.vue
 -->
 <template>
@@ -141,7 +141,7 @@ import {
   ElMessageBox
 } from 'element-plus'
 import { MessageBox, Timer } from '@element-plus/icons-vue'
-import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { defineComponent, onActivated, reactive, ref, toRefs } from 'vue'
 import dayjs from 'dayjs'
 import Service from './api'
 import { Sort } from 'element-plus/es/components/table/src/table/defaults'
@@ -248,7 +248,7 @@ export default defineComponent({
       editVisible.value = false
       fetchdata()
     }
-    onMounted(() => {
+    onActivated(() => {
       fetchdata()
     })
     return {

@@ -56,11 +56,12 @@
 </template>
 <script lang="ts">
 import { ElMessage, FormRules } from 'element-plus'
-import { defineComponent, toRefs, reactive, ref, onMounted } from 'vue'
+import { defineComponent, toRefs, reactive, ref, onActivated } from 'vue'
 import { validURL } from '@/utils/validate'
 import Service from './api'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store'
+import dayjs from 'dayjs'
 export default defineComponent({
   name: 'NewsUpdate',
   setup () {
@@ -101,6 +102,8 @@ export default defineComponent({
     const submitForm = () => {
       formRef.value.validate((valid: any): boolean => {
         if (valid) {
+          state.form.publish_time = dayjs(state.form.publish_time).format()
+          state.form.spider_time = dayjs(state.form.spider_time).format()
           Service.updateNewsInfo(state.form).then((res: any) => {
             state.form = {
               newsid: 0,
@@ -124,7 +127,7 @@ export default defineComponent({
         return false
       })
     }
-    onMounted(() => {
+    onActivated(() => {
       state.form.newsid = parseInt(route.params.newsid as string)
       state.form.title = route.params.title as string
       state.form.author = route.params.author as string

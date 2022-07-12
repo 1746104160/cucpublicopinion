@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 12:44:24
+ * @LastEditTime: 2022-07-12 13:56:02
  * @FilePath: /app/src/router/index.ts
  */
 
@@ -102,7 +102,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
   {
     path: '/dashboard',
     component: layout,
-    redirect: '/dashboard/usersedit',
+    redirect: '/dashboard/usersmanage',
     meta: {
       title: '系统管理',
       icon: 'ic ic-setup-fill'
@@ -131,7 +131,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
   {
     path: '/news',
     component: layout,
-    redirect: '/news/usersedit',
+    redirect: '/news/newsmanage',
     meta: {
       title: '新闻管理',
       icon: 'ic ic-document-fill'
@@ -162,6 +162,46 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         meta: {
           hidden: true,
           title: '新闻修改'
+        }
+      }
+    ]
+  },
+  {
+    path: '/security',
+    component: layout,
+    redirect: '/security/servicemanage',
+    meta: {
+      title: '安全管理',
+      icon: 'ic ic-manage-fill'
+    },
+    children: [
+      {
+        path: '/security/servicemanage',
+        name: 'serviceManage',
+        component: () => import(/* webpackChunkName: "serviceManage" */ '@/views/Security/serviceManage.vue'),
+        meta: {
+          title: '安全管理',
+          icon: 'ic ic-manage-fill'
+        }
+      }
+    ]
+  },
+  {
+    path: '/log',
+    component: layout,
+    redirect: '/log/logmanage',
+    meta: {
+      title: '日志管理',
+      icon: 'ic ic-task-fill'
+    },
+    children: [
+      {
+        path: '/log/logmanage',
+        name: 'logManage',
+        component: () => import(/* webpackChunkName: "serviceManage" */ '@/views/Logs/logManage.vue'),
+        meta: {
+          title: '日志管理',
+          icon: 'ic ic-task-fill'
         }
       }
     ]

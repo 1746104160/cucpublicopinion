@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 00:24:17
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 12:45:15
+ * @LastEditTime: 2022-07-12 14:19:06
  * @FilePath: /app/src/views/News/newsManage.vue
 -->
 <!--
@@ -30,8 +30,8 @@
               刷新
             </el-button>
           </el-header>
-          <div id="Serach" class="search-container">
-            <el-input v-model="param.search" placeholder="请输入关键字搜索" @change="onChange">
+          <div class="search-container">
+            <el-input v-model="param.search" placeholder="请输入标题关键字搜索" @change="onChange">
               <template #prepend>
                 <el-button :icon="Search" @click="fetchdata"/>
               </template>
@@ -118,9 +118,9 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus'
-import { User, Timer, Search } from '@element-plus/icons-vue'
+import { User, Timer, Search, Refresh } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { defineComponent, onActivated, reactive, ref, toRefs } from 'vue'
 import dayjs from 'dayjs'
 import Service from './api'
 import { Sort } from 'element-plus/es/components/table/src/table/defaults'
@@ -128,7 +128,8 @@ export default defineComponent({
   name: 'UsersManage',
   components: {
     Timer,
-    User
+    User,
+    Refresh
   },
   setup () {
     const router = useRouter()
@@ -182,7 +183,7 @@ export default defineComponent({
         fetchdata()
       }
     }
-    onMounted(() => {
+    onActivated(() => {
       fetchdata()
     })
     return {
@@ -240,5 +241,16 @@ export default defineComponent({
 
 .el-tag+.el-tag {
   margin-left: 10px;
+}
+.search-container{
+  :deep(.el-input__inner) {
+    border-radius: 0;
+    border: 0;
+    padding-left: 0;
+    padding-right: 0;
+    box-shadow: none !important;
+    border-bottom: 1px solid #d9d9d9;
+    vertical-align: middle;
+  }
 }
 </style>

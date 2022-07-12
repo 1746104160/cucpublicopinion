@@ -4,14 +4,14 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-10 01:01:09
+LastEditTime: 2022-07-11 22:48:20
 FilePath: /server/run.py
 '''
 import datetime
+import pandas as pd
 from flask_script import Manager
 from sqlalchemy import create_engine
 from instance.config import SQLALCHEMY_DATABASE_URI
-import pandas as pd
 from app import create_app
 from app.utils.mysqldb import db
 from app.model import Users, Roles
@@ -79,7 +79,7 @@ def create_db():
                      description=f"test{i}用户" if i < 5 else None)
         user.set_password("Aa123456")
         Users.add(user)
-        pd.read_csv('spider.csv').to_sql('news',engine,if_exists='append',index=False)
+    pd.read_csv('spider.csv').dropna().to_sql('news',engine,if_exists='append',index=False)
     print('db create ok!')
 
 

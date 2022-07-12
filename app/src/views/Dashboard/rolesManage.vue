@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-08 01:18:12
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 23:35:51
+ * @LastEditTime: 2022-07-11 22:40:18
  * @FilePath: /app/src/views/Dashboard/rolesManage.vue
 -->
 <template>
@@ -97,7 +97,7 @@ import {
   ElMessage,
   ElMessageBox
 } from 'element-plus'
-import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { defineComponent, onActivated, reactive, ref, toRefs } from 'vue'
 import dayjs from 'dayjs'
 import Service from './api'
 import { Sort } from 'element-plus/es/components/table/src/table/defaults'
@@ -203,7 +203,7 @@ export default defineComponent({
       createVisible.value = editVisible.value = false
       fetchdata()
     }
-    onMounted(() => {
+    onActivated(() => {
       fetchdata()
     })
     return {

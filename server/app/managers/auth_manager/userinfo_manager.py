@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 17:14:22
+LastEditTime: 2022-07-11 23:17:51
 FilePath: /server/app/managers/auth_manager/userinfo_manager.py
 '''
 import base64
@@ -56,7 +56,7 @@ parser.add_argument('Authorization',
                       standardmodel)
 @userinfo_ns.response(int(HTTPStatus.TOO_MANY_REQUESTS), "visit too fast.",
                       standardmodel)
-class UserIno(Resource):
+class UserInfo(Resource):
     '''
     Author: 邵佳泓
     msg: 发送用户信息

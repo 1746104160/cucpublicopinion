@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-10 01:02:02
+LastEditTime: 2022-07-12 11:07:43
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -80,7 +80,6 @@ class Users(db.Model):
         nullable=True,
     )
     description = db.Column(db.String(255))
-    # favorites = db.relationship('Favorites', backref='user', lazy='dynamic')
     role = db.relationship('Roles',
                            secondary='user2role',
                            backref=db.backref('users', lazy='dynamic'))

@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 23:45:20
+LastEditTime: 2022-07-11 23:08:12
 FilePath: /server/app/managers/admin_manager/user_manager.py
 '''
 from http import HTTPStatus
@@ -367,7 +367,7 @@ class BanUser(Resource):
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
-            request_data = deleteparser.parse_args()
+            request_data = banparser.parse_args()
             userid = request_data.get('userid')
             user = Users.query.filter_by(userid=userid)
             [
