@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 11:26:39
+ * @LastEditTime: 2022-07-12 23:30:52
  * @FilePath: /app/src/views/Personal/personalSetting.vue
 -->
 
@@ -51,7 +51,7 @@
                         <el-button
                           type="primary"
                           :loading="updateLoading"
-                          @click="submitForm()"
+                          @click="submitForm"
                           >更新基本信息</el-button
                         >
                         <el-button @click="resetForm()">重置</el-button>

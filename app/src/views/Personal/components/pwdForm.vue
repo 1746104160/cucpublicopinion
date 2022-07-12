@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 11:26:27
+ * @LastEditTime: 2022-07-13 00:10:18
  * @FilePath: /app/src/views/Personal/components/pwdForm.vue
 -->
 
@@ -101,7 +101,7 @@
         </el-form-item>
         <el-form-item label="图片验证码" prop="captchapic">
           <el-row :gutter="20">
-            <el-col :span="13">
+            <el-col :span="16">
               <div class="grid-content">
                 <el-input
                   v-model="resetForm.captchapic"
@@ -112,7 +112,7 @@
             </el-col>
             <el-col :span="8">
               <div class="grid-content">
-                <div @click="handleGetPicCaptcha" v-html="imgcode"></div>
+                <el-image @click="handleGetPicCaptcha" :src="imgcode" />
               </div>
             </el-col>
           </el-row>

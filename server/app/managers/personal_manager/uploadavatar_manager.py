@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 17:29:51
+LastEditTime: 2022-07-12 23:43:19
 FilePath: /server/app/managers/personal_manager/uploadavatar_manager.py
 '''
 from http import HTTPStatus
@@ -19,7 +19,12 @@ from app.managers.model import standardmodel as model
 upload_ns = Namespace('upload', description='用户信息')
 upload_ns.models[model.name] = model
 parser = reqparse.RequestParser()
-parser.add_argument('avatar', type=FileStorage, nullable=False, required=True, help='头像不能为空')
+parser.add_argument('avatar',
+                    type=FileStorage,
+                    location='files',
+                    nullable=False,
+                    required=True,
+                    help='头像不能为空')
 parser.add_argument('X-CSRFToken',
                     type=str,
                     location='headers',
@@ -33,6 +38,7 @@ parser.add_argument('Authorization',
                     required=True,
                     help='Authorization不能为空')
 
+
 @upload_ns.route('')
 @upload_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", model)
 @upload_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.", model)
@@ -42,11 +48,10 @@ class Upload(Resource):
     Author: 邵佳泓
     msg: 上传头像
     '''
-    decorators = [limiter.limit('1/minute'), limiter.limit('5/day')]
+    decorators = [jwt_required(), limiter.limit('1/minute'), limiter.limit('5/day')]
 
     @upload_ns.marshal_with(model)
     @upload_ns.expect(parser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
@@ -57,5 +62,5 @@ class Upload(Resource):
         avatar = request_data.get('avatar')
         userid = get_jwt_identity()
         [redis.delete(key) for key in redis.keys() if key.decode('utf-8').startswith('userinfo')]
-        Users.query.filter_by(id=userid).update({'avatar': avatar.stream.read()})
-        return {'code': 200, 'message': '更新个人信息成功', 'success': True}
+        Users.query.filter_by(userid=userid).update({'avatar': avatar.stream.read()})
+        return {'code': 0, 'message': '更新个人信息成功', 'success': True}

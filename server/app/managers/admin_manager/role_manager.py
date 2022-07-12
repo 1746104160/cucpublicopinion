@@ -4,18 +4,18 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-11 23:08:19
+LastEditTime: 2022-07-12 15:27:41
 FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
 from http import HTTPStatus
 import time
 from flask_restx import Namespace, Resource, fields, reqparse
 from flask_restx.inputs import positive, regex
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_current_user
 from sqlalchemy.exc import SQLAlchemyError
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
-from app.model import Users, Roles
+from app.model import Roles
 from app.managers.model import standardmodel
 
 role_ns = Namespace('role', description='角色管理')
@@ -79,11 +79,10 @@ class RoleInfo(Resource):
     Author: 邵佳泓
     msg: 发送角色信息
     '''
-    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
 
     @role_ns.expect(pagination_reqparser)
     @role_ns.marshal_with(model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
@@ -94,8 +93,7 @@ class RoleInfo(Resource):
         page = request_data.get('page')
         size = request_data.get('size')
         order = request_data.get('order')
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         expire_time = int(time.time()) + 86400
         key = '/'.join(['roleinfo', order, str(page), str(size)])
         length = Roles.query.count()
@@ -153,18 +151,16 @@ class AllRoutesInfo(Resource):
     Author: 邵佳泓
     msg: 返回全部路由
     '''
-    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
     @role_ns.marshal_with(routesmodel)
     @role_ns.expect(roleinfoparser)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
         msg: 返回全部路由
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -207,19 +203,17 @@ class UpdateRole(Resource):
     Author: 邵佳泓
     msg: 更新角色权限
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @role_ns.marshal_with(standardmodel)
     @role_ns.expect(updateparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 更新角色权限
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -269,19 +263,17 @@ class CreateRole(Resource):
     Author: 邵佳泓
     msg: 添加角色
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @role_ns.marshal_with(standardmodel)
     @role_ns.expect(createparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 添加角色
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -324,19 +316,17 @@ class DeleteRole(Resource):
     Author: 邵佳泓
     msg: 删除角色
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @role_ns.marshal_with(standardmodel)
     @role_ns.expect(deleteparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 删除角色
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -378,19 +368,17 @@ class BanRole(Resource):
     Author: 邵佳泓
     msg: 角色限制管理
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @role_ns.marshal_with(standardmodel)
     @role_ns.expect(banparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 角色限制管理
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:

@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 09:59:52
+LastEditTime: 2022-07-12 15:26:03
 FilePath: /server/app/managers/admin_manager/news_manager.py
 '''
 from http import HTTPStatus
@@ -13,10 +13,10 @@ import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from flask_restx import Namespace, Resource, fields, reqparse
 from flask_restx.inputs import positive, regex, datetime_from_iso8601, URL
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_current_user
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
-from app.model import Users, News
+from app.model import News
 from app.managers.model import standardmodel
 
 datetime.datetime.now()
@@ -85,11 +85,10 @@ class NewsInfo(Resource):
     Author: 邵佳泓
     msg: 发送新闻信息
     '''
-    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
 
     @news_ns.expect(pagination_reqparser)
     @news_ns.marshal_with(model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
@@ -101,8 +100,7 @@ class NewsInfo(Resource):
         size = request_data.get('size')
         order = request_data.get('order')
         keyword = request_data.get('keyword')
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         expire_time = int(
             time.mktime((datetime.date.today() + datetime.timedelta(days=1)).timetuple()))
         key = '/'.join(['newsinfo', order, str(page), str(size), keyword])
@@ -172,11 +170,10 @@ class NewsContent(Resource):
     Author: 邵佳泓
     msg: 获取新闻正文
     '''
-    decorators = [limiter.limit('10/minute'), limiter.limit('500/day')]
+    decorators = [jwt_required(), limiter.limit('10/minute'), limiter.limit('500/day')]
 
     @news_ns.expect(newsdetailparser)
     @news_ns.marshal_with(content_model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
@@ -184,8 +181,7 @@ class NewsContent(Resource):
         '''
         request_data = newsdetailparser.parse_args()
         newsid = request_data.get('newsid')
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
         else:
@@ -260,19 +256,17 @@ class UpdateNews(Resource):
     Author: 邵佳泓
     msg: 更新新闻数据
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @news_ns.marshal_with(standardmodel)
     @news_ns.expect(updateparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 更新新闻数据
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
         else:
@@ -360,19 +354,17 @@ class Createnews(Resource):
     Author: 邵佳泓
     msg: 导入新闻数据
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @news_ns.marshal_with(standardmodel)
     @news_ns.expect(createparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 导入新闻数据
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
         else:
@@ -427,19 +419,17 @@ class Deletenews(Resource):
     Author: 邵佳泓
     msg: 删除新闻
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @news_ns.marshal_with(standardmodel)
     @news_ns.expect(deleteparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 删除新闻
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/news' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理新闻的权限', 'success': False}
         else:

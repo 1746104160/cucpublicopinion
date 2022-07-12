@@ -4,15 +4,14 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-11 23:17:51
+LastEditTime: 2022-07-12 21:42:27
 FilePath: /server/app/managers/auth_manager/userinfo_manager.py
 '''
 import base64
 from http import HTTPStatus
 from flask_restx import Namespace, Resource, fields, reqparse
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_current_user
 from app.utils.limiter import limiter
-from app.model import Users
 from app.managers.model import standardmodel
 
 userinfo_ns = Namespace('userinfo', description='用户信息')
@@ -61,19 +60,17 @@ class UserInfo(Resource):
     Author: 邵佳泓
     msg: 发送用户信息
     '''
-    decorators = [limiter.limit('10/minute'), limiter.limit('500/day')]
+    decorators = [jwt_required(), limiter.limit('10/minute'), limiter.limit('500/day')]
 
     @userinfo_ns.marshal_with(model)
     @userinfo_ns.expect(parser)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
         msg: 发送用户信息
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         return {
             'code': 0,
             'message': '发送成功',

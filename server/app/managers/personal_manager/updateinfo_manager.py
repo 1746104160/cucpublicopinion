@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 17:29:47
+LastEditTime: 2022-07-12 23:28:24
 FilePath: /server/app/managers/personal_manager/updateinfo_manager.py
 '''
 from http import HTTPStatus
@@ -47,11 +47,10 @@ class Update(Resource):
     Author: 邵佳泓
     msg: 更新个人信息
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('50/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('50/day')]
 
     @update_ns.marshal_with(model)
     @update_ns.expect(parser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
@@ -62,5 +61,5 @@ class Update(Resource):
         description = request_data.get('description')
         userid = get_jwt_identity()
         [redis.delete(key) for key in redis.keys() if key.decode('utf-8').startswith('userinfo')]
-        Users.query.filter_by(id=userid).update({'description': description})
-        return {'code': 200, 'message': '更新个人信息成功', 'success': True}
+        Users.query.filter_by(userid=userid).update({'description': description})
+        return {'code': 0, 'message': '更新个人信息成功', 'success': True}

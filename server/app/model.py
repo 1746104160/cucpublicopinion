@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 11:07:43
+LastEditTime: 2022-07-13 00:31:15
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -71,7 +71,7 @@ class Users(db.Model):
         nullable=False,
     )
     avatar = db.Column(
-        db.LargeBinary(length=2048),
+        db.LargeBinary(length=(2**24)-1),
         default=blob,
         nullable=False,
     )

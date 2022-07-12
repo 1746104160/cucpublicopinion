@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:31:22
+ * @LastEditTime: 2022-07-12 22:15:16
  * @FilePath: /app/src/layout/components/Navbar.vue
 -->
 
@@ -61,6 +61,8 @@ import Search from '@/components/Search/index.vue'
 import { toFullScreen, exitFullScreen } from '@/utils/screen'
 import { useStore } from '@/store/index'
 import { useStorage } from 'vue3-storage'
+import Service from './api'
+import { ElMessage } from 'element-plus'
 export default defineComponent({
   name: 'NavbarItem',
   components: {
@@ -100,10 +102,14 @@ export default defineComponent({
     }
     const logout = () => {
       // clear()
-      storage.removeStorageSync('accessToken')
-      sessionStorage.removeItem('Routes')
-      sessionStorage.removeItem('userinfo')
-      router.go(0)
+      Service.Logout().then((res:any) => {
+        storage.removeStorageSync('accessToken')
+        sessionStorage.removeItem('Routes')
+        sessionStorage.removeItem('userinfo')
+        router.go(0)
+      }).catch((err:any) => {
+        ElMessage.error(err.message)
+      })
     }
     onMounted(() => {
       window.addEventListener('setItem', () => {

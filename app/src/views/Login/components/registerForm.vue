@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 11:25:56
+ * @LastEditTime: 2022-07-12 22:05:59
  * @FilePath: /app/src/views/Login/components/registerForm.vue
 -->
 
@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item label="图片验证码" prop="captchapic">
         <el-row :gutter="20">
-          <el-col :span="13">
+          <el-col :span="16">
             <div class="grid-content">
               <el-input v-model="registerForm.captchapic" autocomplete="off" placeholder="请输入图片验证码"></el-input>
             </div>
@@ -181,12 +181,14 @@ export default defineComponent({
                 })
                 emit('toLogin')
               }).catch((err) => {
+                handleGetPicCaptcha()
                 ElMessage({
                   type: 'warning',
                   message: err.message
                 })
               })
           } catch (err: any) {
+            handleGetPicCaptcha()
             ElMessage({
               type: 'error',
               message: err.message

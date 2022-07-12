@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-11 23:08:12
+LastEditTime: 2022-07-12 15:28:42
 FilePath: /server/app/managers/admin_manager/user_manager.py
 '''
 from http import HTTPStatus
@@ -12,7 +12,7 @@ import time
 import datetime
 from flask_restx import Namespace, Resource, fields, reqparse
 from flask_restx.inputs import positive, regex
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_current_user
 from app.utils.limiter import limiter
 from app.utils.redisdb import redis
 from app.model import Users, Roles, User2Role
@@ -89,11 +89,10 @@ class UserInfo(Resource):
     Author: 邵佳泓
     msg: 发送用户信息
     '''
-    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
 
     @user_ns.expect(pagination_reqparser)
     @user_ns.marshal_with(model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
@@ -104,8 +103,7 @@ class UserInfo(Resource):
         page = request_data.get('page')
         size = request_data.get('size')
         order = request_data.get('order')
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         expire_time = int(time.time()) + 86400
         key = '/'.join(['userinfo', order, str(page), str(size)])
         length = Users.query.count()
@@ -183,19 +181,17 @@ class AllRoleInfo(Resource):
     Author: 邵佳泓
     msg: 返回全部角色
     '''
-    decorators = [limiter.limit('20/minute'), limiter.limit('1000/day')]
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
 
     @user_ns.marshal_with(roles_model)
     @user_ns.expect(roleinfoparser)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
         msg: 返回全部角色
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -245,19 +241,17 @@ class UpdateUser(Resource):
     Author: 邵佳泓
     msg: 更新角色
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @user_ns.marshal_with(standardmodel)
     @user_ns.expect(updateparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 更新角色
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -299,19 +293,17 @@ class DeleteUser(Resource):
     Author: 邵佳泓
     msg: 删除用户
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @user_ns.marshal_with(standardmodel)
     @user_ns.expect(deleteparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 删除用户
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:
@@ -351,19 +343,17 @@ class BanUser(Resource):
     Author: 邵佳泓
     msg: 用户封禁管理
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('100/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('100/day')]
 
     @user_ns.marshal_with(standardmodel)
     @user_ns.expect(banparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 用户封禁管理
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if 'admin' != user.role[0].name:
             return {'code': 1, 'message': '非管理员用户', 'success': False}
         else:

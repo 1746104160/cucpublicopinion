@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 17:13:58
+LastEditTime: 2022-07-12 15:29:51
 FilePath: /server/app/managers/personal_manager/resetpw_manager.py
 '''
 import binascii
@@ -77,11 +77,10 @@ class ResetPW(Resource):
     Author: 邵佳泓
     msg: 修改密码
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('50/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('50/day')]
 
     @resetpw_ns.expect(parser)
     @resetpw_ns.marshal_with(model)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓

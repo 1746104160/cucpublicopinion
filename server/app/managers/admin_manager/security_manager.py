@@ -4,16 +4,15 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 11:17:09
+LastEditTime: 2022-07-12 15:27:49
 FilePath: /server/app/managers/admin_manager/security_manager.py
 '''
 from http import HTTPStatus
 import re
 from flask_restx import Namespace, Resource, fields, reqparse
 from flask_restx.inputs import positive, regex
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_current_user
 from app.utils.redisdb import redis
-from app.model import Users
 from app.managers.model import standardmodel
 
 security_ns = Namespace('security', description='接口安全管理')
@@ -70,17 +69,16 @@ class ServiceInfo(Resource):
     Author: 邵佳泓
     msg: 发送接口安全信息
     '''
+    decorators = [jwt_required()]
     @security_ns.expect(pagination_reqparser)
     @security_ns.marshal_with(model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
         msg: 发送接口安全信息
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/security' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理接口安全的权限', 'success': False}
         else:
@@ -152,17 +150,16 @@ class BanAPI(Resource):
     Author: 邵佳泓
     msg: 接口封禁管理
     '''
+    decorators = [jwt_required()]
     @security_ns.marshal_with(standardmodel)
     @security_ns.expect(banparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 接口封禁管理
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/security' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理接口安全的权限', 'success': False}
         else:
@@ -202,17 +199,16 @@ class UnBanAPI(Resource):
     Author: 邵佳泓
     msg: 接口封禁管理
     '''
+    decorators = [jwt_required()]
     @security_ns.marshal_with(standardmodel)
     @security_ns.expect(banparser)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓
         msg: 接口封禁管理
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/security' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理接口安全的权限', 'success': False}
         else:

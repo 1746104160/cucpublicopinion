@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:19:58
+ * @LastEditTime: 2022-07-12 23:40:33
  * @FilePath: /app/src/views/Personal/api/index.ts
  */
 
@@ -47,6 +47,7 @@ class Service {
       url: personalApi.uploadAvatar,
       method: 'post',
       json: false,
+      contentType: 'multipart/form-data; charset=UTF-8',
       data
     }).then((res) => {
       if (res.code === 0) {

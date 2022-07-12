@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 17:13:47
+LastEditTime: 2022-07-12 15:29:44
 FilePath: /server/app/managers/personal_manager/resetemail_manager.py
 '''
 import binascii
@@ -78,11 +78,10 @@ class ResetEmail(Resource):
     Author: 邵佳泓
     msg: 修改邮箱
     '''
-    decorators = [limiter.limit('3/minute'), limiter.limit('50/day')]
+    decorators = [jwt_required(), limiter.limit('3/minute'), limiter.limit('50/day')]
 
     @resetemail_ns.expect(parser)
     @resetemail_ns.marshal_with(model)
-    @jwt_required()
     def post(self):
         '''
         Author: 邵佳泓

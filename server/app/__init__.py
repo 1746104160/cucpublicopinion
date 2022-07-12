@@ -4,17 +4,20 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-08 11:58:33
+LastEditTime: 2022-07-12 22:27:20
 FilePath: /server/app/__init__.py
 '''
 
+import datetime
 from flask import Flask, send_from_directory, make_response
 from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect,generate_csrf
+from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_jwt_extended import JWTManager
 
+from app.model import Users
 from .utils import db, redis, limiter, requestid, mail
-from .managers import auth,personal,admin
+from .managers import auth, personal, admin
+
 
 def create_app():
     '''
@@ -24,36 +27,50 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile('config.py')
     CORS(app, supports_credentials=True, resources=r"*")
-    jwt = JWTManager(app)
     CSRFProtect(app)
+    jwt = JWTManager(app)
+
     db.init_app(app)
     redis.init_app(app)
     limiter.init_app(app)
     requestid.init_app(app)
     mail.init_app(app)
+
     app.register_blueprint(auth)
     app.register_blueprint(personal)
     app.register_blueprint(admin)
+
     @app.route('/', methods=['GET'])
     def index():
         return send_from_directory('static', 'index.html')
 
+    @app.route('/assets/<string:filename>', methods=['GET'])
+    def assets(filename):
+        return send_from_directory('static/assets', filename)
+
     @app.route('/favicon.ico', methods=['GET'])
     def favicon():
-        return send_from_directory('static',
-                                   'favicon.ico',
-                                   mimetype='image/vnd.microsoft.icon')
+        return send_from_directory('static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
     @app.after_request
     def after_request(response):
         response.set_cookie('csrf_token', generate_csrf())
         return response
 
-    @jwt.expired_token_loader
-    def expired_token_callback():
-        return make_response("token expired", 403)
+    @jwt.token_in_blocklist_loader
+    def check_if_token_is_revoked(_jwt_header, jwt_payload: dict):
+        jti = jwt_payload["jti"]
+        exp = jwt_payload["exp"]
+        token_in_redis = redis.get(jti)
+        return token_in_redis is not None or exp < datetime.datetime.now().timestamp()
 
-    @jwt.unauthorized_loader
-    def unauthorized_callback():
-        return make_response("unauthorized", 403)
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return user.userid
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return Users.query.filter_by(userid=identity).one_or_none()
 
     return app

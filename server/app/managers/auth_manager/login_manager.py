@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 12:08:37
+LastEditTime: 2022-07-12 21:43:38
 FilePath: /server/app/managers/auth_manager/login_manager.py
 '''
 import binascii
@@ -110,7 +110,7 @@ class LoginSystem(Resource):
                 user.last_login = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 user.last_login_ip = request.remote_addr
                 db.session.commit()
-                token = create_access_token(identity=user.userid,
+                token = create_access_token(identity=user,
                                             expires_delta=datetime.timedelta(days=1))
                 return {
                     'code': 0,

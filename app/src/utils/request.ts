@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:21:15
+ * @LastEditTime: 2022-07-12 23:38:49
  * @FilePath: /app/src/utils/request.ts
  */
 
@@ -88,14 +88,11 @@ export default function request (arr: IAxiosData) {
       url: arr.url,
       method: arr.method || 'POST',
       headers: {
-
-        // 'Authorization': arr.token || '',
-        // eslint-disable-next-line no-nested-ternary
         'content-type': arr.contentType
           ? arr.contentType
           : arr.json
             ? 'application/json; charset=UTF-8'
-            : 'application/multipart/form-data; charset=UTF-8'
+            : 'multipart/form-data; charset=UTF-8'
       },
       params: arr.params || '',
       data: arr.data || '',

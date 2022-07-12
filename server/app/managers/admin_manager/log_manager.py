@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 14:28:52
+LastEditTime: 2022-07-12 21:41:22
 FilePath: /server/app/managers/admin_manager/log_manager.py
 '''
 from datetime import datetime
@@ -12,9 +12,9 @@ from http import HTTPStatus
 import re
 from flask_restx import Namespace, Resource, fields, reqparse
 from flask_restx.inputs import positive, regex, date_from_iso8601
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.model import Users
+from flask_jwt_extended import jwt_required, get_current_user
 from app.managers.model import standardmodel
+from app.utils.limiter import limiter
 
 log_ns = Namespace('log', description='日志管理')
 log_ns.models[standardmodel.name] = standardmodel
@@ -78,17 +78,16 @@ class LogInfo(Resource):
     Author: 邵佳泓
     msg: 发送nginx日志信息
     '''
+    decorators = [jwt_required(), limiter.limit('20/minute'), limiter.limit('1000/day')]
     @log_ns.expect(pagination_reqparser)
     @log_ns.marshal_with(model)
-    @jwt_required()
     def get(self):
         '''
         Author: 邵佳泓
         msg: 发送nginx日志信息
         param {*} self
         '''
-        userid = get_jwt_identity()
-        user = Users.query.filter_by(userid=userid).first()
+        user = get_current_user()
         if '/log' not in [route for role in user.role for route in eval(role.authedroutes)]:
             return {'code': 1, 'message': '没有管理nginx日志的权限', 'success': False}
         else:

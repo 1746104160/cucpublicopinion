@@ -4,8 +4,8 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-07 01:41:28
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 21:16:38
-FilePath: /server/app/managers/admin_manager/__init__.py
+LastEditTime: 2022-07-12 22:29:30
+FilePath: /server/app/managers/visualize_manager/__init__.py
 '''
 from flask import Blueprint
 from flask_restx import Api
