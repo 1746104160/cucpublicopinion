@@ -4,34 +4,36 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 11:37:06
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 23:50:03
- * @FilePath: /app/src/views/Home/components/LeftChart2.vue
+ * @LastEditTime: 2022-07-14 00:11:35
+ * @FilePath: /app/src/views/Home/components/RightChart.vue
 -->
 <template>
-  <div class="left-chart-2">
-    <div class="lc2-header">
-      新闻类型
+  <div class="right-chart">
+    <div class="rc-header">
+      聚类分析
     </div>
-    <dv-active-ring-chart :config="config" />
+
+    <div class="rc-chart-container">
+      <dv-scroll-ranking-board :config="config" style="height:88%;"/>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, toRef, toRefs } from 'vue'
 export default defineComponent({
-  name: 'LeftChart2',
+  name: 'RightChart',
   props: {
-    categories: {
+    clusters: {
       default: () => { return [{ name: '', value: 0 }] as any[] }
     }
   },
   setup (props) {
-    const data = toRef(props, 'categories')
+    const data = toRef(props, 'clusters')
     const state = reactive({
       config: {
         data,
-        radius: '65%',
-        activeRadius: '70%'
+        unit: '条'
       }
     })
     return {
@@ -42,24 +44,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.left-chart-2 {
+.right-chart {
   width: 100%;
-  height: 50%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 
-  .lc2-header {
-    text-align: center;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 30px;
-    margin-bottom: 20px;
+  .rc-header {
+    font-size: 24px;
+    font-weight: bold;
+    height: 30px;
+    line-height: 30px;
   }
 
-  .dv-active-ring-chart {
-    height: calc(100% - 80px);
+  .rc-chart-container {
+    flex: 1;
+    display: flex;
   }
 }
 </style>

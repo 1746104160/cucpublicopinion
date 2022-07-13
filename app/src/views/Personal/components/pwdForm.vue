@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 01:11:20
+ * @LastEditTime: 2022-07-13 20:03:47
  * @FilePath: /app/src/views/Personal/components/pwdForm.vue
 -->
 
@@ -32,14 +32,16 @@
             placeholder="请输入绑定账号"
           >
             <template #prepend>
+              <el-form-item prop="mode">
               <el-select
-                v-model="selectedAccType"
+                v-model="verifyForm.mode"
                 style="width: 120px"
                 placeholder="请选择"
               >
                 <el-option label="邮箱" value="email"></el-option>
                 <el-option label="中传SSO" value="cuc"></el-option>
               </el-select>
+              </el-form-item>
             </template>
           </el-input>
         </el-form-item>
@@ -60,7 +62,7 @@
         class="reset-form"
       >
       <el-form-item
-          v-if="selectedAccType === 'email'"
+          v-if="verifyForm.mode === 'email'"
           label="邮件验证码"
           prop="captchaemail"
         >
@@ -72,7 +74,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item
-          v-else-if="selectedAccType === 'cuc'"
+          v-else-if="verifyForm.mode === 'cuc'"
           label="SSO登录密码"
           prop="cucpassword"
         >
@@ -144,6 +146,7 @@ import {
 interface stateType {
   verifyForm: {
     account: string;
+    mode: string;
   };
   resetForm: {
     captchaemail: string;
@@ -162,7 +165,8 @@ export default defineComponent({
     const verifyRef = ref()
     const state = reactive<stateType>({
       verifyForm: {
-        account: ''
+        account: '',
+        mode: ''
       },
       resetForm: {
         captchaemail: '',
@@ -174,7 +178,6 @@ export default defineComponent({
       imgcode: ''
     })
     const active = ref(0)
-    const selectedAccType = ref()
     const failure = ref(false)
     const nextstepText = ref('下一步')
     // 校验状态
@@ -198,12 +201,12 @@ export default defineComponent({
       failure.value = true
       verifyRef.value.validate((valid: any) => {
         if (valid) {
-          if ((selectedAccType.value === 'email' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).email) ||
-          (selectedAccType.value === 'cuc' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount)) {
+          if ((state.verifyForm.mode === 'email' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).email) ||
+          (state.verifyForm.mode === 'cuc' && state.verifyForm.account !== JSON.parse(sessionStorage.getItem('userinfo') as string).cucaccount)) {
             getNextStepFailure()
             return false
           } else {
-            if (selectedAccType.value === 'email') {
+            if (state.verifyForm.mode === 'email') {
               handleGetEmailCaptcha()
             }
             active.value = 1
@@ -237,24 +240,17 @@ export default defineComponent({
         }
         Service.postCaptcha(data)
           .then((res) => {
-            ElMessage({
-              type: 'success',
-              message: res.message
-            })
+            ElMessage.success(res.message)
             return true
           })
           .catch((err) => {
-            ElMessage({
-              type: 'warning',
-              message: err.message
-            })
+            handleGetPicCaptcha()
+            ElMessage.error(err.message)
           })
         return false
       } catch (err: any) {
-        ElMessage({
-          type: 'warning',
-          message: err.message
-        })
+        handleGetPicCaptcha()
+        ElMessage.error(err.message)
         return false
       }
     }
@@ -280,31 +276,25 @@ export default defineComponent({
       resetRef.value.validate(async (valid: any) => {
         if (valid) {
           try {
-            const { account } = state.verifyForm
+            const { mode, account } = state.verifyForm
             const { cucpassword, password, captchaemail, captchapic } = state.resetForm
             const data = {
               account,
-              mode: selectedAccType.value,
-              verify: selectedAccType.value === 'email' ? captchaemail : encrypt(cucpassword),
+              mode,
+              verify: mode === 'email' ? captchaemail : encrypt(cucpassword),
               password: encrypt(password),
               captcha: captchapic
             }
             Service.postResetPwd(data)
               .then((res) => {
                 active.value = 2
-                ElMessage({
-                  type: 'warning',
-                  message: res.message
-                })
+                ElMessage.success(res.message)
               })
               .catch((err) => {
-                ElMessage({
-                  type: 'success',
-                  message: err.message
-                })
+                ElMessage.error(err.message)
               })
-          } catch (err) {
-            console.error(err)
+          } catch (err:any) {
+            ElMessage.error(err.message)
           }
         }
         return false
@@ -339,11 +329,11 @@ export default defineComponent({
       }
     }
     const validateAccount = (rule: any, value: any, callback: any) => {
-      if (!value && !selectedAccType.value) {
+      if (!value || !state.verifyForm.mode) {
         callback(new Error('请选择验证账号'))
-      } else if (selectedAccType.value === 'email' && !validEmail(value)) {
+      } else if (state.verifyForm.mode === 'email' && !validEmail(value)) {
         callback(new Error('请输入正确的邮箱'))
-      } else if (selectedAccType.value === 'cuc' && !validCUCUsername(value)) {
+      } else if (state.verifyForm.mode === 'cuc' && !validCUCUsername(value)) {
         callback(new Error('请输入正确的中传SSO账号'))
       } else {
         callback()
@@ -370,7 +360,8 @@ export default defineComponent({
       }
     }
     const verifyrules = reactive<FormRules>({
-      account: [{ required: true, trigger: 'blur', validator: validateAccount }]
+      account: [{ required: true, trigger: 'blur', validator: validateAccount }],
+      mode: [{ required: true, trigger: 'blur', message: '' }]
     })
     const resetrules = reactive<FormRules>({
       cucpassword: [{ required: true, trigger: 'blur', validator: validateCUCPassword }],
@@ -391,7 +382,6 @@ export default defineComponent({
       handleResetPwd,
       handleGetPicCaptcha,
       active,
-      selectedAccType,
       handleNextStep,
       handleLastStep,
       resetValue,

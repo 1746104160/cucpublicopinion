@@ -1,44 +1,24 @@
 <template>
   <div class="center-cmp">
-    <div class="cc-header">
-      <dv-decoration-1 style="width:200px;height:50px;" />
-      <div>新闻数据总数</div>
-      <dv-decoration-1 style="width:200px;height:50px;" />
-    </div>
 
     <div class="cc-details">
-      <div class="card">
-        2
-      </div>
-      <div class="card">
-        1
-      </div>
-      <div class="card">
-        3
-      </div>
-      <div class="card">
-        7
+      <div v-for="digit in total" :key="digit" class="card">
+        {{ digit }}
       </div>
     </div>
 
     <div class="cc-main-container">
       <div class="ccmc-left">
-        <div class="station-info">
-          新华网<span>1315</span>
-        </div>
-        <div class="station-info">
-          人民网<span>415</span>
+        <div v-for="data of datas.slice(0,2)" :key="data" class="station-info">
+          {{ data.name }}<span>{{ data.value }}</span>
         </div>
       </div>
       <div class="ccmc-middle">
         <div ref="wordcloudref" class="echart" />
       </div>
       <div class="ccmc-right">
-        <div class="station-info">
-          <span>90</span>光明网
-        </div>
-        <div class="station-info">
-          <span>317</span>其他
+        <div v-for="data of datas.slice(2,4)" :key="data" class="station-info">
+          <span>{{ data.value }}</span>{{ data.name }}
         </div>
       </div>
     </div>
@@ -48,12 +28,33 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import { usewordcloud } from './usewordcloud'
+import Service from '../api'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'CenterCmp',
-  setup () {
+  props: {
+    total: {
+      type: String,
+      default: ''
+    },
+    datas: {
+      default: () => { return [{ name: '', value: 0 }, { name: '', value: 0 }, { name: '', value: 0 }, { name: '', value: 0 }] as any[] }
+    }
+  },
+  setup (props) {
+    const router = useRouter()
     const wordcloudref = ref(undefined)
     onMounted(() => {
-      usewordcloud(wordcloudref.value)
+      Service.getHotword().then((res:any) => {
+        const data = [] as any[]
+        res.data.forEach((element:any) => {
+          data.push({
+            name: element.hot_word,
+            value: element.hot
+          })
+        })
+        usewordcloud(wordcloudref.value, data, router)
+      })
     })
     return {
       wordcloudref
@@ -71,16 +72,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 
-  .cc-header {
-    height: 70px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 30px;
-  }
-
   .cc-details {
     height: 120px;
+    padding-top: 50px;
     display: flex;
     justify-content: center;
     font-size: 32px;

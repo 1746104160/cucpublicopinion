@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 01:09:39
+ * @LastEditTime: 2022-07-13 20:03:10
  * @FilePath: /app/src/views/Personal/components/emailForm.vue
 -->
 
@@ -240,27 +240,18 @@ export default defineComponent({
         }
         Service.postCaptcha(data)
           .then((res) => {
-            ElMessage({
-              type: 'success',
-              message: res.message
-            })
+            ElMessage.success(res.message)
             getCodeSucces()
             return true
           })
           .catch((err) => {
             sendingCode.value = false
-            ElMessage({
-              type: 'warning',
-              message: err.message
-            })
+            ElMessage.error(err.message)
           })
         return false
       } catch (err: any) {
         sendingCode.value = false
-        ElMessage({
-          type: 'warning',
-          message: err.message
-        })
+        ElMessage.error(err.message)
         return false
       }
     }
@@ -299,19 +290,15 @@ export default defineComponent({
               .then((res) => {
                 store.dispatch('userModule/getUserInfo')
                 active.value = 2
-                ElMessage({
-                  type: 'warning',
-                  message: res.message
-                })
+                ElMessage.success(res.message)
               })
               .catch((err) => {
-                ElMessage({
-                  type: 'success',
-                  message: err.message
-                })
+                handleGetPicCaptcha()
+                ElMessage.error(err.message)
               })
-          } catch (err) {
-            console.error(err)
+          } catch (err:any) {
+            handleGetPicCaptcha()
+            ElMessage.error(err.message)
           }
         }
         return false

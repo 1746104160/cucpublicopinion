@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 15:28:42
+LastEditTime: 2022-07-13 10:58:23
 FilePath: /server/app/managers/admin_manager/user_manager.py
 '''
 from http import HTTPStatus
@@ -104,7 +104,6 @@ class UserInfo(Resource):
         size = request_data.get('size')
         order = request_data.get('order')
         user = get_current_user()
-        expire_time = int(time.time()) + 86400
         key = '/'.join(['userinfo', order, str(page), str(size)])
         length = Users.query.count()
         if 'admin' != user.role[0].name:
@@ -148,10 +147,7 @@ class UserInfo(Resource):
                     'description': role.description
                 } for role in user.role]
             } for user in users if 'admin' not in [role.name for role in user.role]]
-            pipe = redis.pipeline()
-            pipe.set(key, str(data).encode('utf-8'))
-            pipe.expireat(key, expire_time)
-            pipe.execute()
+            redis.set(key,str(data).encode('utf-8'),ex=86400)
             return {
                 'code': 0,
                 'message': '获取用户信息成功',
@@ -262,8 +258,7 @@ class UpdateUser(Resource):
                 roleid = Roles.query.filter_by(name=role).first().roleid
                 User2Role.add(User2Role(user_id=userid, role_id=roleid))
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('userinfo')
+                redis.delete(key) for key in redis.keys('userinfo/*')
             ]
             return {'code': 0, 'message': '变更角色成功', 'success': True}
 
@@ -312,8 +307,7 @@ class DeleteUser(Resource):
             User2Role.query.filter_by(user_id=userid).delete()
             Users.query.filter_by(userid=userid).delete()
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('userinfo')
+                redis.delete(key) for key in redis.keys('userinfo/*')
             ]
             return {'code': 0, 'message': '删除用户成功', 'success': True}
 
@@ -361,8 +355,7 @@ class BanUser(Resource):
             userid = request_data.get('userid')
             user = Users.query.filter_by(userid=userid)
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('userinfo')
+                redis.delete(key) for key in redis.keys('userinfo/*')
             ]
             if user.first().valid:
                 user.update({'valid': False})

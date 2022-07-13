@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 00:24:17
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 14:19:06
+ * @LastEditTime: 2022-07-13 20:32:33
  * @FilePath: /app/src/views/News/newsManage.vue
 -->
 <!--
@@ -119,7 +119,7 @@ import {
   ElMessageBox
 } from 'element-plus'
 import { User, Timer, Search, Refresh } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { defineComponent, onActivated, reactive, ref, toRefs } from 'vue'
 import dayjs from 'dayjs'
 import Service from './api'
@@ -133,6 +133,7 @@ export default defineComponent({
   },
   setup () {
     const router = useRouter()
+    const route = useRoute()
     const tableData = ref([] as any[])
     const sort = ref<Sort>({
       prop: 'userid',
@@ -157,7 +158,7 @@ export default defineComponent({
     const handleDelete = (index: number, row: any) => {
       return ElMessageBox.confirm('是否删除新闻' + row.title + '?')
         .then(() => {
-          Service.deleteNews({ userid: row.userid }).then(
+          Service.deleteNews({ newsid: row.newsid }).then(
             (res) => {
               ElMessage.success(res.message)
               fetchdata()
@@ -184,6 +185,10 @@ export default defineComponent({
       }
     }
     onActivated(() => {
+      if (route.params.keyword) {
+        console.log(route.params.keyword)
+        state.param.search = route.params.keyword as string
+      }
       fetchdata()
     })
     return {

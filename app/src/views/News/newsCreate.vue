@@ -74,8 +74,8 @@ export default defineComponent({
       }
     })
     const validateURL = (rule: any, value: any, callback: any) => {
-      if (!value) {
-        callback(new Error('请输入新闻来源地址'))
+      if (!value || !state.form.articleSource) {
+        callback(new Error('请选择文章来源'))
       } else if (!validURL(value)) {
         callback(new Error('不是正确的url'))
       } else {
@@ -89,7 +89,7 @@ export default defineComponent({
       publish_time: [{ required: true, trigger: 'blur', message: '请选择文章发布时间' }],
       spider_time: [{ required: true, trigger: 'blur', message: '请选择文章爬取时间' }],
       author: [{ required: true, trigger: 'blur', message: '请输入文章作者' }],
-      articleSource: [{ required: true, trigger: 'blur', message: '请选择文章来源' }],
+      articleSource: [{ required: true, trigger: 'blur', message: '' }],
       article_url: [{ required: true, trigger: 'blur', validator: validateURL }]
     })
     const submitForm = () => {

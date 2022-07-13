@@ -64,7 +64,6 @@ export default defineComponent({
      * @description 点击tab
      */
     const clickTab = (tab: TabsPaneContext, event: Event) => {
-      // eslint-disable-next-line no-console
       currentIndex.value = tab.paneName
       router.push({ path: tab.paneName as string })
     }

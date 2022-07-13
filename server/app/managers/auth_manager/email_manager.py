@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 12:24:26
+LastEditTime: 2022-07-13 10:56:32
 FilePath: /server/app/managers/auth_manager/email_manager.py
 '''
 from http import HTTPStatus
@@ -80,12 +80,8 @@ class Email(Resource):
             try:
                 mail.send(message)
                 value = str(code).encode('utf-8')
-                expire_time = int(time.time()) + 300
                 key = '/'.join(["email", requestid, emailaddr])
-                pipe = redis.pipeline()
-                pipe.set(key, value)
-                pipe.expireat(key, expire_time)
-                pipe.execute()
+                redis.set(key, value, ex=300)
                 return {"code": 0, "success": True, "message": f'邮件验证码已发送到{emailaddr}'}
             except SMTPServerDisconnected:
                 return {"code": 2, "success": False, "message": '邮件验证码发送失败，请使用中国大陆邮箱'}

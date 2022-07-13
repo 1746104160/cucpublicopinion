@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 22:38:09
+LastEditTime: 2022-07-13 10:53:28
 FilePath: /server/app/managers/auth_manager/register_manager.py
 '''
 import binascii
@@ -116,8 +116,7 @@ class RegisterSystem(Resource):
                              last_login=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 user.set_password(password)
                 [
-                    redis.delete(key) for key in redis.keys()
-                    if key.decode('utf-8').startswith('userinfo/desc')
+                    redis.delete(key) for key in redis.keys('userinfo/desc/*')
                 ]
                 Users.add(user)
                 return {'code': 0, 'message': '注册成功', 'success': True}
@@ -208,8 +207,7 @@ class RegisterSSO(Resource):
                          last_login=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             user.set_password(password)
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('userinfo/desc')
+                redis.delete(key) for key in redis.keys('userinfo/desc/*')
             ]
             Users.add(user)
             return {'code': 0, 'message': '注册成功', 'success': True}

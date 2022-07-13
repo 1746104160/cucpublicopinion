@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-08 01:18:12
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 14:17:05
+ * @LastEditTime: 2022-07-13 10:32:36
  * @FilePath: /app/src/views/Security/serviceManage.vue
 -->
 <template>
@@ -135,7 +135,7 @@ export default defineComponent({
       if (multipleSelection.value.length === 0) {
         return ElMessageBox.confirm('是否封禁接口' + row.servicename + '?')
           .then(() => {
-            Service.banService({ data: row }).then(
+            Service.banService({ data: [row] }).then(
               (res) => {
                 ElMessage.success(res.message)
                 fetchdata()
@@ -164,7 +164,7 @@ export default defineComponent({
       if (multipleSelection.value.length === 0) {
         return ElMessageBox.confirm('是否解封接口' + row.servicename + '?')
           .then(() => {
-            Service.unbanService({ data: row }).then(
+            Service.unbanService({ data: [row] }).then(
               (res) => {
                 ElMessage.success(res.message)
                 fetchdata()

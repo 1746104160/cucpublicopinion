@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 21:42:27
+LastEditTime: 2022-07-13 11:41:32
 FilePath: /server/app/managers/auth_manager/userinfo_manager.py
 '''
 import base64
@@ -28,6 +28,7 @@ user_model = userinfo_ns.model(
         'role': fields.List(fields.String, required=True, description='角色'),
         'avatar': fields.String(required=True, description='头像'),
         'cucaccount': fields.String(required=True, description='中传学号'),
+        'description': fields.String(required=True, description='个人简介'),
     })
 data_model = userinfo_ns.model(
     'userinfodata', {
@@ -87,6 +88,7 @@ class UserInfo(Resource):
                     'email': user.email,
                     'cucaccount': user.cucaccount,
                     'created_on': user.created_on,
+                    'description': user.description,
                     'last_login': user.last_login,
                     'valid': user.valid,
                     'last_login_ip': user.last_login_ip,

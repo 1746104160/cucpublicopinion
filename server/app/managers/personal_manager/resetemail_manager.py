@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 15:29:44
+LastEditTime: 2022-07-13 10:53:44
 FilePath: /server/app/managers/personal_manager/resetemail_manager.py
 '''
 import binascii
@@ -117,8 +117,7 @@ class ResetEmail(Resource):
         else:
             user = Users.query.filter_by(userid=get_jwt_identity()).first()
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('userinfo')
+                redis.delete(key) for key in redis.keys('userinfo/*')
             ]
             if Users.query.filter_by(cucaccount=account).first().userid != user.userid:
                 return {'code': 7, 'message': '用户不匹配', 'success': False}

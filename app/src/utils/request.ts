@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 23:38:49
+ * @LastEditTime: 2022-07-13 11:14:40
  * @FilePath: /app/src/utils/request.ts
  */
 
@@ -113,31 +113,16 @@ export default function request (arr: IAxiosData) {
         const responseStatus = `${response.status}`
         // 状态码2开头的处理逻辑
         if (responseStatus.charAt(0) === '2') {
-          if (
-            response.data.code !== 0
-          ) {
-            ElMessage({
-              type: 'error',
-              message: response.data.message
-            })
+          if (response.data.code !== 0) {
             reject(response.data)
             return
           }
-
           resolve(response.data)
         } else {
-          ElMessage({
-            type: 'error',
-            message: response.data.message
-          })
           reject(response.data)
         }
       })
       .catch((err) => {
-        ElMessage({
-          type: 'error',
-          message: err.message
-        })
         reject(err)
       })
   })

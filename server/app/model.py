@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-13 00:31:15
+LastEditTime: 2022-07-13 23:48:44
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -162,8 +162,6 @@ class News(db.Model):
     author = db.Column(db.String(50), nullable=False)
     articleSource = db.Column(db.String(50), nullable=False)
     article_url = db.Column(db.String(255), nullable=False)
-    # fav = db.relationship('Favorites', uselist=False, back_populates="news")
-    # comments = db.relationship('Comments', backref='news', lazy='dynamic')
 
     @classmethod
     def add(cls, news):
@@ -176,74 +174,116 @@ class News(db.Model):
         db.session.add(news)
         db.session.commit()
 
-# class Favorites(db.Model):
-#     '''
-#     Author: 邵佳泓
-#     msg: 喜好信息表
-#     '''
-#     __tablename__ = 'favorite'
-#     favid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-#     userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-#     newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
-#     news = db.relationship('News', uselist=False, back_populates="fav")
+class SenAna(db.Model):
+    '''
+    Author: 赵润泽
+    msg: 新闻情感分析表
+    '''
+    __tablename__ = "sen_ana"
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    newsid = db.Column(db.Integer(),db.ForeignKey('news.newsid'),nullable=False)
+    attitude = db.Column(db.String(10), nullable=False)
+    news = db.relationship("News",backref=db.backref("sen_ana",uselist=False),uselist=False)
 
-#     @classmethod
-#     def add(cls, fav):
-#         '''
-#         Author: 邵佳泓
-#         msg: 添加收藏
-#         param {*} cls
-#         param {*} user
-#         '''
-#         db.session.add(fav)
-#         db.session.commit()
+    @classmethod
+    def add(cls, sen_ana):
+        '''
+        Author: 赵润泽
+        msg: 新闻情感表
+        param {*} cls
+        param {*} news
+        '''
+        db.session.add(sen_ana)
+        db.session.commit()
+
+class HotWord(db.Model):
+    '''
+    Author: 令狐晓玉
+    msg: 热词表
+    '''
+    __tablename__ = 'hot_word'
+
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    hot_word = db.Column(db.String(25),nullable=False)
+    hot = db.Column(db.Float(), nullable=False)
+
+    @classmethod
+    def add(cls, hot_word):
+        '''
+        Author: 令狐晓玉
+        msg: 热词表
+        param {*} cls
+        param {*} news
+        '''
+        db.session.add(hot_word)
+        db.session.commit()
+
+class NewsCluster(db.Model):
+    '''
+    Author: 邬语丝
+    msg: 新闻聚类表
+    '''
+    __tablename__ = "news_cluster"
+
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    newsid = db.Column(db.Integer(),db.ForeignKey('news.newsid'),nullable=False)
+    category = db.Column(db.Integer(), nullable = False) # 簇标号
+    topic_words = db.Column(db.String(100),nullable=False)
+    news = db.relationship("News",backref=db.backref("news_cluster",uselist=False),uselist=False)
 
 
-# class Comments(db.Model):
-#     '''
-#     Author: 邵佳泓
-#     msg: 评论信息表
-#     '''
-#     __tablename__ = 'comment'
-#     commentid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-#     userid = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-#     newsid = db.Column(db.Integer(), db.ForeignKey('news.newsid'), nullable=False)
-#     content = db.Column(db.String(255), nullable=False)
-#     comment_time = db.Column(db.DateTime, nullable=False)
-#     replies = db.relationship('Replies', backref='comment', lazy='dynamic')
+    @classmethod
+    def add(cls, news_cluster):
+        '''
+        Author: 邬语丝
+        msg: 聚类表
+        param {*} cls
+        param {*} news
+        '''
+        db.session.add(news_cluster)
+        db.session.commit()
 
-#     @classmethod
-#     def add(cls, comment):
-#         '''
-#         Author: 邵佳泓
-#         msg: 添加评论
-#         param {*} cls
-#         param {*} user
-#         '''
-#         db.session.add(comment)
-#         db.session.commit()
+class NewsClass(db.Model):
+    '''
+    Author: 朱俊杰
+    msg: 新闻分类表
+    '''
+    __tablename__ = "news_class"
 
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    newsid = db.Column(db.Integer(),db.ForeignKey('news.newsid'),nullable=False)
+    category = db.Column(db.String(20), nullable = False)
+    news = db.relationship("News",backref=db.backref("news_class",uselist=False),uselist=False)
 
-# class Replies(db.Model):
-#     '''
-#     Author: 邵佳泓
-#     msg: 回复信息表
-#     '''
-#     __tablename__ = 'reply'
-#     replyid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-#     responder_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-#     reviewer_id = db.Column(db.Integer(), db.ForeignKey('user.userid'), nullable=False)
-#     commentid = db.Column(db.Integer(), db.ForeignKey('comment.commentid'), nullable=False)
-#     content = db.Column(db.String(255), nullable=False)
-#     reply_time = db.Column(db.DateTime, nullable=False)
+    @classmethod
+    def add(cls, news_class):
+        '''
+        Author: 朱俊杰
+        msg: 新闻分类表
+        param {*} cls
+        param {*} ews_class
+        '''
+        db.session.add(news_class)
+        db.session.commit()
 
-#     @classmethod
-#     def add(cls, reply):
-#         '''
-#         Author: 邵佳泓
-#         msg: 添加回复
-#         param {*} cls
-#         param {*} user
-#         '''
-#         db.session.add(reply)
-#         db.session.commit()
+class PostNum(db.Model):
+    '''
+    Author: 朱俊杰
+    msg: 发布数量表
+    '''
+    __tablename__ = "post_num"
+
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    articleSource = db.Column(db.String(50), nullable=False)
+    num = db.Column(db.Integer(), nullable = False)
+
+    @classmethod
+    def add(cls, post_num):
+        '''
+        Author: 朱俊杰
+        msg: 发布数量表
+        param {*} cls
+        param {*} post_num
+        '''
+        db.session.add(post_num)
+        db.session.commit()

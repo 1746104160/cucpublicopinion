@@ -4,16 +4,13 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 11:37:06
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-10 14:54:23
+ * @LastEditTime: 2022-07-13 23:50:52
  * @FilePath: /app/src/views/Home/components/LeftChart1.vue
 -->
 <template>
   <div class="left-chart-1">
     <div class="lc1-header">
-      张三
-    </div>
-    <div class="lc1-details">
-      新闻数据总数<span>430</span>
+      情感分析
     </div>
     <dv-capsule-chart class="lc1-chart" :config="config" />
     <dv-decoration-2 style="height:10px;" />
@@ -21,36 +18,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRef, toRefs } from 'vue'
 export default defineComponent({
   name: 'LeftChart1',
-  setup () {
+  props: {
+    sentiments: {
+      default: () => { return [{ name: '', value: 0 }] as any[] }
+    }
+  },
+  setup (props) {
+    const data = toRef(props, 'sentiments')
     const state = reactive({
       config: {
-        data: [
-          {
-            name: '新华网',
-            value: 167
-          },
-          {
-            name: '光明网',
-            value: 67
-          },
-          {
-            name: '人民网',
-            value: 123
-          },
-          {
-            name: '人民日报',
-            value: 55
-          },
-          {
-            name: '其他',
-            value: 98
-          }
-        ],
-        colors: ['#00baff', '#3de7c9', '#fff', '#ffc530', '#469f4b'],
-        unit: '件'
+        data,
+        unit: '条'
       }
     })
     return {
@@ -65,7 +46,7 @@ export default defineComponent({
 <style lang="scss">
 .left-chart-1 {
   width: 100%;
-  height: 37%;
+  height: 50%;
   display: flex;
   flex-grow: 0;
   flex-direction: column;

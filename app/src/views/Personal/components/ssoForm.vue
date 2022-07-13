@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 00:22:34
+ * @LastEditTime: 2022-07-13 20:04:14
  * @FilePath: /app/src/views/Personal/components/ssoForm.vue
 -->
 
@@ -210,24 +210,17 @@ export default defineComponent({
         }
         Service.postCaptcha(data)
           .then((res) => {
-            ElMessage({
-              type: 'success',
-              message: res.message
-            })
+            ElMessage.success(res.message)
             return true
           })
           .catch((err) => {
-            ElMessage({
-              type: 'warning',
-              message: err.message
-            })
+            handleGetPicCaptcha()
+            ElMessage.error(err.message)
           })
         return false
       } catch (err: any) {
-        ElMessage({
-          type: 'warning',
-          message: err.message
-        })
+        handleGetPicCaptcha()
+        ElMessage.error(err.message)
         return false
       }
     }
@@ -266,19 +259,13 @@ export default defineComponent({
               .then((res) => {
                 store.dispatch('userModule/getUserInfo')
                 active.value = 2
-                ElMessage({
-                  type: 'warning',
-                  message: res.message
-                })
+                ElMessage.success(res.message)
               })
               .catch((err) => {
-                ElMessage({
-                  type: 'success',
-                  message: err.message
-                })
+                ElMessage.error(err.message)
               })
-          } catch (err) {
-            console.error(err)
+          } catch (err:any) {
+            ElMessage.error(err.message)
           }
         }
         return false

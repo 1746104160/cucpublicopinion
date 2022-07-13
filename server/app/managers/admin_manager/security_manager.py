@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 15:27:49
+LastEditTime: 2022-07-13 10:52:20
 FilePath: /server/app/managers/admin_manager/security_manager.py
 '''
 from http import HTTPStatus
@@ -70,6 +70,7 @@ class ServiceInfo(Resource):
     msg: 发送接口安全信息
     '''
     decorators = [jwt_required()]
+
     @security_ns.expect(pagination_reqparser)
     @security_ns.marshal_with(model)
     def get(self):
@@ -87,16 +88,9 @@ class ServiceInfo(Resource):
             size = request_data.get('size')
             ip_addr = request_data.get('ip_addr')
             ips = list(
-                set([
-                    key.decode('utf8').split('/')[1] for key in redis.keys()
-                    if re.match(r'^LIMITER/(.*)/day$', key.decode('utf8'))
-                ]))
-            keys = [
-                key for key in redis.keys()
-                if re.match(f'^LIMITER/{ip_addr}(.*)day$', key.decode('utf8'))
-            ] if ip_addr else [
-                key for key in redis.keys() if re.match(r'^LIMITER/(.*)/day$', key.decode('utf8'))
-            ]
+                set([key.decode('utf8').split('/')[1] for key in redis.keys('LIMITER/*/day')]))
+            keys = redis.keys(f'LIMITER/{ip_addr}/*/day') if ip_addr else redis.keys(
+                'LIMITER/*/day')
             total = len(keys)
             start = (page - 1) * size
             end = min(start + size, total)
@@ -151,6 +145,7 @@ class BanAPI(Resource):
     msg: 接口封禁管理
     '''
     decorators = [jwt_required()]
+
     @security_ns.marshal_with(standardmodel)
     @security_ns.expect(banparser)
     def post(self):
@@ -182,7 +177,7 @@ class BanAPI(Resource):
                 max_visit = data.get('max_visit')
                 if not max_visit:
                     return {'code': 1, 'message': '最大访问数不能为空', 'success': False}
-                elif not isinstance(max_visit,int):
+                elif not isinstance(max_visit, int):
                     return {'code': 1, 'message': '最大访问数必须为整数', 'success': False}
                 key = f'LIMITER/{ip_addr}/{servicename}/{max_visit}/1/day'.encode("utf8")
                 redis.set(key, max_visit)
@@ -200,6 +195,7 @@ class UnBanAPI(Resource):
     msg: 接口封禁管理
     '''
     decorators = [jwt_required()]
+
     @security_ns.marshal_with(standardmodel)
     @security_ns.expect(banparser)
     def post(self):
@@ -231,7 +227,7 @@ class UnBanAPI(Resource):
                 max_visit = data.get('max_visit')
                 if not max_visit:
                     return {'code': 1, 'message': '最大访问数不能为空', 'success': False}
-                elif not isinstance(max_visit,int):
+                elif not isinstance(max_visit, int):
                     return {'code': 1, 'message': '最大访问数必须为整数', 'success': False}
                 key = f'LIMITER/{ip_addr}/{servicename}/{max_visit}/1/day'.encode("utf8")
                 redis.set(key, 0)

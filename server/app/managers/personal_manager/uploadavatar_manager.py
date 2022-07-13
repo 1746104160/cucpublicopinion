@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 23:43:19
+LastEditTime: 2022-07-13 10:54:32
 FilePath: /server/app/managers/personal_manager/uploadavatar_manager.py
 '''
 from http import HTTPStatus
@@ -61,6 +61,6 @@ class Upload(Resource):
         request_data = parser.parse_args()
         avatar = request_data.get('avatar')
         userid = get_jwt_identity()
-        [redis.delete(key) for key in redis.keys() if key.decode('utf-8').startswith('userinfo')]
+        [redis.delete(key) for key in redis.keys('userinfo/*')]
         Users.query.filter_by(userid=userid).update({'avatar': avatar.stream.read()})
         return {'code': 0, 'message': '更新个人信息成功', 'success': True}

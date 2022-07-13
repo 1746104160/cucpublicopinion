@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:32:05
+ * @LastEditTime: 2022-07-13 20:03:42
  * @FilePath: /app/src/layout/components/Sidebar/Logo.vue
 -->
 
@@ -35,7 +35,6 @@ export default defineComponent({
     }
   },
   setup () {
-    // eslint-disable-next-line no-console
     return {
       logo
     }

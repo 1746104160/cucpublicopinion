@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 23:30:52
+ * @LastEditTime: 2022-07-13 11:20:41
  * @FilePath: /app/src/views/Personal/personalSetting.vue
 -->
 
@@ -216,16 +216,10 @@ export default defineComponent({
             updateLoading.value = false
             store.dispatch('userModule/getUserInfo')
             router.go(0)
-            ElMessage({
-              type: 'success',
-              message: res.message
-            })
+            ElMessage.success(res.message)
             return true
           }).catch(err => {
-            ElMessage({
-              type: 'error',
-              message: err
-            })
+            ElMessage.error(err.message)
             return false
           })
         }
@@ -243,10 +237,7 @@ export default defineComponent({
             return true
           })
           .catch((err: any) => {
-            ElMessage({
-              type: 'error',
-              message: err
-            })
+            ElMessage.error(err.message)
             return false
           })
       }

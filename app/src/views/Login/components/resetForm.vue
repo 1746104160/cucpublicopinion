@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 22:06:18
+ * @LastEditTime: 2022-07-13 11:20:31
  * @FilePath: /app/src/views/Login/components/resetForm.vue
 -->
 
@@ -114,26 +114,17 @@ export default defineComponent({
           email
         }
         Service.postCaptcha(data).then(res => {
-          ElMessage({
-            type: 'success',
-            message: res.message
-          })
+          ElMessage.success(res.message)
           getCodeSucces()
           return true
         }).catch(err => {
           sendingCode.value = false
-          ElMessage({
-            type: 'warning',
-            message: err.message
-          })
+          ElMessage.error(err.message)
         })
         return false
       } catch (err :any) {
         sendingCode.value = false
-        ElMessage({
-          type: 'warning',
-          message: err.message
-        })
+        ElMessage.error(err.message)
         return false
       }
     }
@@ -167,24 +158,15 @@ export default defineComponent({
               emailcode: captchaemail
             }
             Service.postResetPwd(data).then(res => {
-              ElMessage({
-                type: 'warning',
-                message: res.message
-              })
+              ElMessage.success(res.message)
               emit('toLogin')
             }).catch(err => {
               handleGetPicCaptcha()
-              ElMessage({
-                type: 'success',
-                message: err.message
-              })
+              ElMessage.error(err.message)
             })
           } catch (err:any) {
             handleGetPicCaptcha()
-            ElMessage({
-              type: 'success',
-              message: err.message
-            })
+            ElMessage.error(err.message)
           }
         }
         return false

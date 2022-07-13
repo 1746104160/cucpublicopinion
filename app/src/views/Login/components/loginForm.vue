@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 22:05:27
+ * @LastEditTime: 2022-07-13 11:13:14
  * @FilePath: /app/src/views/Login/components/loginForm.vue
 -->
 
@@ -145,17 +145,11 @@ export default defineComponent({
               }
             }).catch(err => {
               handleGetPicCaptcha()
-              ElMessage({
-                type: 'warning',
-                message: err.message
-              })
+              ElMessage.error(err.message)
             })
           } catch (err: any) {
             handleGetPicCaptcha()
-            ElMessage({
-              type: 'warning',
-              message: err.message
-            })
+            ElMessage.error(err.message)
           }
         }
         return false

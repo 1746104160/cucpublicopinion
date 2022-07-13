@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-09 11:59:46
+LastEditTime: 2022-07-13 11:05:51
 FilePath: /server/app/managers/auth_manager/captcha_manager.py
 '''
 from http import HTTPStatus
@@ -12,7 +12,7 @@ import random
 import time
 import io
 import base64
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, reqparse
 from captcha.image import ImageCaptcha
 from app.utils.requestid import requestid
 from app.utils.redisdb import redis
@@ -33,8 +33,11 @@ model = captcha_ns.model(
         'success': fields.Boolean(required=True, description='是否成功'),
         'data': fields.Nested(model=data_model, required=True, description='数据')
     })
-
-
+parser = reqparse.RequestParser()
+parser.add_argument('requestid',
+                    type=str,
+                    location='cookies',
+                    help='会话开始id')
 @captcha_ns.route('/<float:rid>')
 @captcha_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.", standardmodel)
 @captcha_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.",
@@ -49,6 +52,7 @@ class Captcha(Resource):
     decorators = [limiter.limit('20/minute'), limiter.limit('500/day')]
 
     @captcha_ns.doc(params={'rid': '避免浏览器缓存'})
+    @captcha_ns.expect(parser)
     @captcha_ns.marshal_with(model)
     def get(self, rid: float):
         '''
@@ -58,17 +62,23 @@ class Captcha(Resource):
         param {float} rid
         '''
         random.seed(rid)
+        request_data = parser.parse_args()
         code = ''.join(random.sample(CHAR_SET, 4))
         image = ImageCaptcha().generate_image(code)
         image_byte = io.BytesIO()
         image.save(image_byte, format='png')
         value = code.encode('utf-8')
-        expire_time = int(time.time()) + 300
         key = "captcha/" + str(requestid.id)
-        pipe = redis.pipeline()
-        pipe.set(key, value)
-        pipe.expireat(key, expire_time)
-        pipe.execute()
+        redis.set(key, value, ex=300)
+        rid = request_data.get('requestid')
+        if rid:
+            redis.delete(("captcha/" + rid).encode('utf-8'))
+            keys = redis.keys(f"email/{rid}/*")
+            for key in keys:
+                code = redis.get(key)
+                email_addr = key.decode('utf-8').split('/')[-1]
+                redis.delete(key)
+                redis.set(f"email/{rid}/{email_addr}", code, ex=300)
         return {
             "code": 0,
             "data": {

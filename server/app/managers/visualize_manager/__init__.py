@@ -4,24 +4,24 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-07 01:41:28
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 22:29:30
+LastEditTime: 2022-07-13 18:33:46
 FilePath: /server/app/managers/visualize_manager/__init__.py
 '''
 from flask import Blueprint
 from flask_restx import Api
 from flask_jwt_extended.exceptions import JWTExtendedException
-from app.managers.admin_manager.user_manager import user_ns
-from app.managers.admin_manager.role_manager import role_ns
-from app.managers.admin_manager.news_manager import news_ns
-from app.managers.admin_manager.security_manager import security_ns
-from app.managers.admin_manager.log_manager import log_ns
-admin = Blueprint("admin", __name__, url_prefix='/admin')
-api = Api(admin, version='1.0', title='Admin API',description='Admin API',doc='/swagger/')
-api.add_namespace(user_ns,path='/user')
-api.add_namespace(role_ns,path='/role')
-api.add_namespace(news_ns,path='/news')
-api.add_namespace(security_ns,path='/security')
-api.add_namespace(log_ns,path='/log')
+from app.managers.visualize_manager.category_manager import category_ns
+from app.managers.visualize_manager.cluster_manager import cluster_ns
+from app.managers.visualize_manager.hotword_manager import hotword_ns
+from app.managers.visualize_manager.postnum_manager import postnum_ns
+from app.managers.visualize_manager.sentiment_manager import sentiment_ns
+visualize = Blueprint("visualize", __name__, url_prefix='/visualize/news')
+api = Api(visualize, version='1.0', title='Visualize API',description='Visualize',doc='/swagger/')
+api.add_namespace(category_ns,path='/category')
+api.add_namespace(cluster_ns,path='/cluster')
+api.add_namespace(hotword_ns,path='/hotword')
+api.add_namespace(postnum_ns,path='/postnum')
+api.add_namespace(sentiment_ns,path='/sentiment')
 @api.errorhandler(JWTExtendedException)
 def handle_jwt_exceptions(error):
     """

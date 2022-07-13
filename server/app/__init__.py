@@ -4,19 +4,19 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 22:27:20
+LastEditTime: 2022-07-13 12:58:36
 FilePath: /server/app/__init__.py
 '''
 
 import datetime
-from flask import Flask, send_from_directory, make_response
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_jwt_extended import JWTManager
 
 from app.model import Users
 from .utils import db, redis, limiter, requestid, mail
-from .managers import auth, personal, admin
+from .managers import auth, personal, admin, visualize
 
 
 def create_app():
@@ -39,6 +39,7 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(personal)
     app.register_blueprint(admin)
+    app.register_blueprint(visualize)
 
     @app.route('/', methods=['GET'])
     def index():

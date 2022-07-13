@@ -60,6 +60,6 @@ class Update(Resource):
         request_data = parser.parse_args()
         description = request_data.get('description')
         userid = get_jwt_identity()
-        [redis.delete(key) for key in redis.keys() if key.decode('utf-8').startswith('userinfo')]
+        [redis.delete(key) for key in redis.keys('userinfo/*')]
         Users.query.filter_by(userid=userid).update({'description': description})
         return {'code': 0, 'message': '更新个人信息成功', 'success': True}

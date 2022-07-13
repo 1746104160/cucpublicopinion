@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 15:26:03
+LastEditTime: 2022-07-13 10:47:33
 FilePath: /server/app/managers/admin_manager/news_manager.py
 '''
 from http import HTTPStatus
@@ -388,8 +388,7 @@ class Createnews(Resource):
                          articleSource=article_source,
                          article_url=article_url))
                 [
-                    redis.delete(key) for key in redis.keys()
-                    if key.decode('utf-8').startswith('newsinfo/desc')
+                    redis.delete(key) for key in redis.keys('newsinfo/desc/*')
                 ]
                 return {'code': 0, 'message': '导入新闻数据成功', 'success': True}
 
@@ -438,8 +437,7 @@ class Deletenews(Resource):
             try:
                 News.query.filter_by(newsid=newsid).delete()
                 [
-                    redis.delete(key) for key in redis.keys()
-                    if key.decode('utf-8').startswith('newsinfo')
+                    redis.delete(key) for key in redis.keys('newsinfo/*')
                 ]
                 return {'code': 0, 'message': '删除新闻成功', 'success': True}
             except SQLAlchemyError:

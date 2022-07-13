@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 15:27:41
+LastEditTime: 2022-07-13 10:48:14
 FilePath: /server/app/managers/admin_manager/role_manager.py
 '''
 from http import HTTPStatus
@@ -94,7 +94,6 @@ class RoleInfo(Resource):
         size = request_data.get('size')
         order = request_data.get('order')
         user = get_current_user()
-        expire_time = int(time.time()) + 86400
         key = '/'.join(['roleinfo', order, str(page), str(size)])
         length = Roles.query.count()
         if 'admin' != user.role[0].name:
@@ -121,10 +120,7 @@ class RoleInfo(Resource):
                 'valid': role.valid,
                 'routes': eval(role.authedroutes)
             } for role in roles if role.name != 'admin']
-            pipe = redis.pipeline()
-            pipe.set(key, str(data).encode('utf-8'))
-            pipe.expireat(key, expire_time)
-            pipe.execute()
+            redis.set(key,str(data).encode('utf-8'),ex=86400)
             return {
                 'code': 0,
                 'message': '获取角色信息成功',
@@ -222,8 +218,7 @@ class UpdateRole(Resource):
             routes = request_data.get('routes')
             Roles.query.filter_by(roleid=roleid).update({'authedroutes': str(routes)})
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('roleinfo')
+                redis.delete(key) for key in redis.keys('roleinfo/*')
             ]
             return {'code': 0, 'message': '变更角色权限成功', 'success': True}
 
@@ -285,8 +280,8 @@ class CreateRole(Resource):
                 description = request_data.get('description')
                 Roles.add(Roles(name=name, description=description))
                 [
-                    redis.delete(key) for key in redis.keys()
-                    if key.decode('utf-8').startswith('roleinfo/desc')
+                    redis.delete(key) for key in redis.keys('roleinfo/desc/*')
+                    if key.decode('utf-8').startswith()
                 ]
                 return {'code': 0, 'message': '创建角色成功', 'success': True}
 
@@ -335,8 +330,7 @@ class DeleteRole(Resource):
             try:
                 Roles.query.filter_by(roleid=roleid).delete()
                 [
-                    redis.delete(key) for key in redis.keys()
-                    if key.decode('utf-8').startswith('roleinfo')
+                    redis.delete(key) for key in redis.keys('roleinfo/*')
                 ]
                 return {'code': 0, 'message': '删除角色成功', 'success': True}
             except SQLAlchemyError:
@@ -386,8 +380,7 @@ class BanRole(Resource):
             roleid = request_data.get('roleid')
             role = Roles.query.filter_by(roleid=roleid)
             [
-                redis.delete(key) for key in redis.keys()
-                if key.decode('utf-8').startswith('roleinfo')
+                redis.delete(key) for key in redis.keys('roleinfo/*')
             ]
             if role.first().valid:
                 role.update({'valid': False})

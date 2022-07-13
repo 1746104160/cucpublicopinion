@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 22:06:58
+ * @LastEditTime: 2022-07-13 11:20:37
  * @FilePath: /app/src/views/Login/components/ssoregisterForm.vue
 -->
 
@@ -121,24 +121,15 @@ export default defineComponent({
               captcha: captchapic
             }
             Service.postSSORegister(data).then(res => {
-              ElMessage({
-                type: 'success',
-                message: '注册成功'
-              })
+              ElMessage.success(res.message)
               emit('toLogin')
             }).catch(err => {
               handleGetPicCaptcha()
-              ElMessage({
-                type: 'warning',
-                message: err.message
-              })
+              ElMessage.error(err.message)
             })
           } catch (err: any) {
             handleGetPicCaptcha()
-            ElMessage({
-              type: 'warning',
-              message: err.message
-            })
+            ElMessage.error(err.message)
           }
         }
         return false

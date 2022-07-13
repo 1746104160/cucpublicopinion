@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 22:05:59
+ * @LastEditTime: 2022-07-13 11:20:07
  * @FilePath: /app/src/views/Login/components/registerForm.vue
 -->
 
@@ -175,24 +175,15 @@ export default defineComponent({
             }
             Service.postRegister(data)
               .then((res: any) => {
-                ElMessage({
-                  type: 'success',
-                  message: '注册成功'
-                })
+                ElMessage.success(res.message)
                 emit('toLogin')
               }).catch((err) => {
                 handleGetPicCaptcha()
-                ElMessage({
-                  type: 'warning',
-                  message: err.message
-                })
+                ElMessage.error(err.message)
               })
           } catch (err: any) {
             handleGetPicCaptcha()
-            ElMessage({
-              type: 'error',
-              message: err.message
-            })
+            ElMessage.error(err.message)
           }
         }
       })
@@ -238,26 +229,17 @@ export default defineComponent({
           email
         }
         Service.postCaptcha(data).then(res => {
-          ElMessage({
-            type: 'success',
-            message: res.message
-          })
+          ElMessage.success(res.message)
           getCodeSucces()
           return true
         }).catch(err => {
           sendingCode.value = false
-          ElMessage({
-            type: 'warning',
-            message: err.message
-          })
+          ElMessage.error(err.message)
         })
         return false
       } catch (err :any) {
         sendingCode.value = false
-        ElMessage({
-          type: 'warning',
-          message: err.message
-        })
+        ElMessage.error(err.message)
         return false
       }
     }
