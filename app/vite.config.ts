@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:49
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-08 00:26:15
+ * @LastEditTime: 2022-07-14 19:38:54
  * @FilePath: /app/vite.config.ts
  */
 import path from 'path'
@@ -81,7 +81,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       proxy: {
         // 类型： Record<string, string | ProxyOp 为开发服务器配置自定义代理规则
         '/api': {
-          target: 'http://127.0.0.1:5000/',
+          target: 'https://software.mcl913.top/',
           changeOrigin: true,
           secure: false,
           // eslint-disable-next-line no-shadow

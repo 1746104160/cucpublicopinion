@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 11:20:31
+ * @LastEditTime: 2022-07-14 20:13:47
  * @FilePath: /app/src/views/Login/components/resetForm.vue
 -->
 
@@ -264,7 +264,7 @@ export default defineComponent({
   .operation {
     text-align: center;
     position: absolute;
-    top: 100%;
+    top: 150%;
     left: 0;
     margin: auto;
     right: 0;

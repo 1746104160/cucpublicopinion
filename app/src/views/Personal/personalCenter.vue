@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 11:26:16
+ * @LastEditTime: 2022-07-14 20:21:37
  * @FilePath: /app/src/views/Personal/personalCenter.vue
 -->
 
@@ -14,7 +14,7 @@
       <el-divider content-position="left">个人中心</el-divider>
     </div>
     <el-row :gutter="20">
-      <el-col :span="8" :offset="1">
+      <el-col :span="16" :offset="4">
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
@@ -30,7 +30,7 @@
             <el-descriptions-item>
               <template #label>
                 <div class="cell-item">
-                  <el-icon style="el-icon-user">
+                  <el-icon >
                     <user />
                   </el-icon>
                   用户名
@@ -41,7 +41,7 @@
             <el-descriptions-item>
               <template #label>
                 <div class="cell-item">
-                  <el-icon style="el-icon-user">
+                  <el-icon >
                     <user />
                   </el-icon>
                   学工号
@@ -52,7 +52,40 @@
             <el-descriptions-item>
               <template #label>
                 <div class="cell-item">
-                  <el-icon style="el-icon-user">
+                  <el-icon >
+                    <timer />
+                  </el-icon>
+                  账号创建时间
+                </div>
+              </template>
+              {{ createdon }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <div class="cell-item">
+                  <el-icon >
+                    <timer />
+                  </el-icon>
+                  最近登录时间
+                </div>
+              </template>
+              {{ lastlogin }}
+            </el-descriptions-item>
+             <el-descriptions-item>
+              <template #label>
+                <div class="cell-item">
+                  <el-icon >
+                    <user />
+                  </el-icon>
+                  最近登录IP
+                </div>
+              </template>
+              {{ lastloginip }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template #label>
+                <div class="cell-item">
+                  <el-icon >
                     <user />
                   </el-icon>
                   角色
@@ -67,7 +100,7 @@
             <el-descriptions-item>
               <template #label>
                 <div class="cell-item">
-                  <el-icon style="el-icon-user">
+                  <el-icon >
                     <user />
                   </el-icon>
                   简介
@@ -78,7 +111,7 @@
             <el-descriptions-item>
               <template #label>
                 <div class="cell-item">
-                  <el-icon style="el-icon-user">
+                  <el-icon>
                     <MessageBox />
                   </el-icon>
                   邮箱
@@ -94,13 +127,15 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onActivated } from 'vue'
-import { User, MessageBox } from '@element-plus/icons-vue'
+import { User, MessageBox, Timer } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 export default defineComponent({
   name: 'PersonalCenter',
   components: {
     User,
-    MessageBox
+    MessageBox,
+    Timer
   },
   setup () {
     const router = useRouter()
@@ -125,7 +160,15 @@ export default defineComponent({
     const avatar = ref(
       JSON.parse(sessionStorage.getItem('userinfo') as string)?.avatar ?? ''
     )
-    const docs = ref()
+    const createdon = ref(
+      dayjs(JSON.parse(sessionStorage.getItem('userinfo') as string).created_on).format('YYYY/MM/DD HH:mm:ss')
+    )
+    const lastlogin = ref(
+      dayjs(JSON.parse(sessionStorage.getItem('userinfo') as string).last_login).format('YYYY/MM/DD HH:mm:ss')
+    )
+    const lastloginip = ref(
+      JSON.parse(sessionStorage.getItem('userinfo') as string).last_login_ip
+    )
     onActivated(() => {
       window.addEventListener('setItem', () => {
         const userinfo: any = JSON.parse(sessionStorage.getItem('userinfo') as string)
@@ -135,6 +178,9 @@ export default defineComponent({
         cuc.value = userinfo.cucaccount ?? '该账号未与中传SSO账号绑定'
         email.value = userinfo.email
         avatar.value = userinfo.avatar
+        createdon.value = dayjs(userinfo.created_on).format('YYYY/MM/DD HH:mm:ss')
+        lastlogin.value = dayjs(userinfo.last_login).format('YYYY/MM/DD HH:mm:ss')
+        lastloginip.value = userinfo.last_login_ip
       })
     })
     return {
@@ -147,7 +193,9 @@ export default defineComponent({
       cuc,
       email,
       avatar,
-      docs
+      createdon,
+      lastlogin,
+      lastloginip
     }
   }
 })

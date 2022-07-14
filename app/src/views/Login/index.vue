@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-14 15:00:12
+ * @LastEditTime: 2022-07-14 20:11:26
  * @FilePath: /app/src/views/Login/index.vue
 -->
 
@@ -135,12 +135,6 @@ export default defineComponent({
       width: 50%;
       padding: 47px 54px;
 
-      img {
-        width: 100%;
-        height: auto;
-        margin: 0px 20px;
-      }
-
       .top {
         display: flex;
         flex-direction: column;
@@ -159,6 +153,19 @@ export default defineComponent({
           color: rgb(166, 175, 188);
         }
       }
+      .bottom {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        height: 70%;
+        img {
+          width: 100%;
+          height: 50%;
+          margin: 0px 20px;
+        }
+      }
+
     }
 
     .login-right {

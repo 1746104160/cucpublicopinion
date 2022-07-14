@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-08 01:18:12
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 14:35:36
+ * @LastEditTime: 2022-07-14 20:31:18
  * @FilePath: /app/src/views/Logs/logManage.vue
 -->
 <template>
@@ -22,11 +22,11 @@
                 刷新
               </el-button>
             </div>
-            <div class="search-container">
-            </div>
           </el-header>
-          <el-date-picker v-model="date" type="date" placeholder="请选择新闻发布时间" :disabled-date="disabledDate"
+          <div class="search-container">
+            <el-date-picker v-model="date" type="date" placeholder="请选择新闻发布时间" :disabled-date="disabledDate"
             :shortcuts="shortcuts" @change="fetchdata" />
+          </div>
           <el-divider />
           <el-main>
             <el-table ref="tableRef" :data="tableData" style="width: 100%" height="60vh" stripe :border="true"
@@ -85,7 +85,7 @@
                 <template #default="scope">
                   <el-tooltip :content="scope.row.http_referer">
                     <span class="flex items-center">
-                      <el-tag>{{ scope.row.http_referer }}</el-tag>
+                      {{ scope.row.http_referer }}
                     </span>
                   </el-tooltip>
                 </template>
@@ -94,7 +94,7 @@
                 <template #default="scope">
                   <el-tooltip :content="scope.row.http_user_agent">
                     <span class="flex items-center">
-                      <el-tag>{{ scope.row.http_user_agent }}</el-tag>
+                      {{ scope.row.http_user_agent }}
                     </span>
                   </el-tooltip>
                 </template>
@@ -138,7 +138,7 @@ export default defineComponent({
     const editVisible = ref(false)
     const total = ref(0)
     const ipaddr = ref('')
-    const date = ref('2022-07-12')
+    const date = ref(dayjs().format('YYYY-MM-DD'))
     const ips = ref([] as dataType[])
     const currentrole = ref()
     const state = reactive({

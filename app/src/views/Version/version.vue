@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-14 13:13:13
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-14 15:01:50
+ * @LastEditTime: 2022-07-14 22:04:46
  * @FilePath: /app/src/views/Version/version.vue
 -->
 <template>
@@ -43,6 +43,10 @@ export default defineComponent({
   },
   setup () {
     const datas = ref([{
+      message: 'add taskmanage',
+      author: '1746104160',
+      date: '2022-07-14T14:05:32Z'
+    }, {
       message: 'add apk qrcode and version info',
       author: '1746104160',
       date: '2022-07-14T7:02:32Z'

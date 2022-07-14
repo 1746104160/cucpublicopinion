@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-14 13:37:57
+ * @LastEditTime: 2022-07-14 20:36:21
  * @FilePath: /app/src/router/index.ts
  */
 
@@ -222,6 +222,26 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         meta: {
           title: '版本信息',
           icon: 'ic ic-clock-fill'
+        }
+      }
+    ]
+  },
+  {
+    path: '/task',
+    component: layout,
+    redirect: '/task/taskmanage',
+    meta: {
+      title: '调度管理',
+      icon: 'ic ic-activity-fill'
+    },
+    children: [
+      {
+        path: '/task/taskmanage',
+        name: 'taskManage',
+        component: () => import(/* webpackChunkName: "taskManage" */ '@/views/Task/task.vue'),
+        meta: {
+          title: '调度管理',
+          icon: 'ic ic-activity-fill'
         }
       }
     ]
