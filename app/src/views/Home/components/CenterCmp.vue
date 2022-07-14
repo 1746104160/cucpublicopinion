@@ -99,8 +99,8 @@ export default defineComponent({
     display: flex;
 
     .ccmc-middle {
-      width: 60%;
-      height: 90%;
+      width: 80%;
+      height: 100%;
       align-items: center;
       .echart{
         width: inherit;

@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-13 23:48:44
+LastEditTime: 2022-07-14 13:24:07
 FilePath: /server/app/model.py
 '''
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -122,7 +122,7 @@ class Roles(db.Model):
     __tablename__ = 'role'
     roleid = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
-    authedroutes = db.Column(db.String(255), nullable=False, default="['/personal']")
+    authedroutes = db.Column(db.String(255), nullable=False, default="['/personal','/version']")
     description = db.Column(db.String(255))
     valid = db.Column(
         db.Boolean,

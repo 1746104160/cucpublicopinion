@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-14 00:26:10
+ * @LastEditTime: 2022-07-14 11:34:00
  * @FilePath: /app/src/views/Home/api/index.ts
  */
 
@@ -100,7 +100,7 @@ class Service {
   /**
    * @description GET 获取新闻情感信息
   */
-  static getSentimentforarticleSource (articleSource:string) {
+  static getSentimentforarticleSource (articleSource:string[]) {
     return request({
       url: visualizeApi.getSentiment + '?articleSource=' + articleSource,
       method: 'GET',

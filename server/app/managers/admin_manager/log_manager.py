@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-12 21:41:22
+LastEditTime: 2022-07-14 14:53:27
 FilePath: /server/app/managers/admin_manager/log_manager.py
 '''
 from datetime import datetime
@@ -135,7 +135,7 @@ class LogInfo(Resource):
             data = data[(page - 1) * size:page * size]
             return {
                 'code': 0,
-                'message': 'success',
+                'message': '获取日志信息成功',
                 'success': True,
                 'data': {
                     'total': total,

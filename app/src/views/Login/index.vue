@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-11 11:25:37
+ * @LastEditTime: 2022-07-14 15:00:12
  * @FilePath: /app/src/views/Login/index.vue
 -->
 
@@ -22,6 +22,7 @@
         </div>
         <div class="bottom">
           <img :src="working" />
+          <img :src="qrcode" />
         </div>
       </div>
       <div class="login-right">
@@ -35,13 +36,13 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import working from '@/assets/woking.gif'
 import LoginForm from './components/loginForm.vue'
 import ResetForm from './components/resetForm.vue'
 import RegisterForm from './components/registerForm.vue'
 import SSORegisterForm from './components/ssoregisterForm.vue'
-
+import Service from './api'
 export default defineComponent({
   name: 'LoginPage',
   components: {
@@ -84,6 +85,13 @@ export default defineComponent({
       showLogin.value = false
       title.value = '中传SSO账号注册'
     }
+    const qrcode = ref('')
+    onMounted(() => {
+      Service.getQRcode().then((res:any) => {
+        qrcode.value = res.data.qrcode
+        console.log(res.data.qrcode)
+      })
+    })
     return {
       title,
       showReset,
@@ -91,6 +99,7 @@ export default defineComponent({
       showLogin,
       showSSORegister,
       working,
+      qrcode,
       handleToRegister,
       handleToReset,
       handleToLogin,

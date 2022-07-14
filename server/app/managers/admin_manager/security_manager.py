@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-05 14:35:32
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-13 10:52:20
+LastEditTime: 2022-07-14 14:53:38
 FilePath: /server/app/managers/admin_manager/security_manager.py
 '''
 from http import HTTPStatus
@@ -102,7 +102,7 @@ class ServiceInfo(Resource):
             } for key in keys[start:end] if (tmp := key.decode('utf8').split('/'))]
             return {
                 'code': 0,
-                'message': 'success',
+                'message': '获取接口安全信息成功',
                 'success': True,
                 'data': {
                     'security': data,

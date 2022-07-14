@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-12 13:56:02
+ * @LastEditTime: 2022-07-14 13:37:57
  * @FilePath: /app/src/router/index.ts
  */
 
@@ -198,10 +198,30 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
       {
         path: '/log/logmanage',
         name: 'logManage',
-        component: () => import(/* webpackChunkName: "serviceManage" */ '@/views/Logs/logManage.vue'),
+        component: () => import(/* webpackChunkName: "logManage" */ '@/views/Logs/logManage.vue'),
         meta: {
           title: '日志管理',
           icon: 'ic ic-task-fill'
+        }
+      }
+    ]
+  },
+  {
+    path: '/version',
+    component: layout,
+    redirect: '/version/versioninfo',
+    meta: {
+      title: '版本信息',
+      icon: 'ic ic-clock-fill'
+    },
+    children: [
+      {
+        path: '/version/versioninfo',
+        name: 'versionInfo',
+        component: () => import(/* webpackChunkName: "versionInfo" */ '@/views/Version/version.vue'),
+        meta: {
+          title: '版本信息',
+          icon: 'ic ic-clock-fill'
         }
       }
     ]

@@ -4,10 +4,9 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-08 01:17:46
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-13 12:58:36
+LastEditTime: 2022-07-14 14:54:37
 FilePath: /server/app/__init__.py
 '''
-
 import datetime
 from flask import Flask, send_from_directory
 from flask_cors import CORS
@@ -16,7 +15,7 @@ from flask_jwt_extended import JWTManager
 
 from app.model import Users
 from .utils import db, redis, limiter, requestid, mail
-from .managers import auth, personal, admin, visualize
+from .managers import auth, personal, admin, visualize, apk
 
 
 def create_app():
@@ -40,6 +39,7 @@ def create_app():
     app.register_blueprint(personal)
     app.register_blueprint(admin)
     app.register_blueprint(visualize)
+    app.register_blueprint(apk)
 
     @app.route('/', methods=['GET'])
     def index():
@@ -48,6 +48,10 @@ def create_app():
     @app.route('/assets/<string:filename>', methods=['GET'])
     def assets(filename):
         return send_from_directory('static/assets', filename)
+
+    @app.route('/apk/<string:version>', methods=['GET'])
+    def apkfile(version):
+        return send_from_directory('resource', 'SEMS_'+version+'.apk')
 
     @app.route('/favicon.ico', methods=['GET'])
     def favicon():

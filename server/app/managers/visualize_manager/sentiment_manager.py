@@ -4,7 +4,7 @@ version: 1.0.0
 Author: 邵佳泓
 Date: 2022-07-13 13:00:59
 LastEditors: 邵佳泓
-LastEditTime: 2022-07-14 00:40:02
+LastEditTime: 2022-07-14 12:48:28
 FilePath: /server/app/managers/visualize_manager/sentiment_manager.py
 '''
 from http import HTTPStatus
@@ -26,10 +26,15 @@ model = sentiment_ns.model(
         'code': fields.Integer(required=True, description='状态码'),
         'message': fields.String(required=True, description='状态信息'),
         'success': fields.Boolean(required=True, description='是否成功'),
-        'data': fields.List(fields.Nested(sentiment_model)),
+        'data': fields.List(fields.List(fields.Nested(sentiment_model))),
     })
 parser = reqparse.RequestParser(bundle_errors=True)
-parser.add_argument('articleSource', type=str, location='args', help='articleSource用于绘制子图')
+parser.add_argument('articleSource',
+                    type=str,
+                    location='args',
+                    action="split",
+                    default='',
+                    help='articleSource用于绘制子图')
 
 parser.add_argument('Authorization',
                     type=str,
@@ -60,21 +65,24 @@ class SentimentInfo(Resource):
         param {*} self
         '''
         request_data = parser.parse_args()
-        article_source = request_data.get('articleSource')
-        if article_source is None:
+        article_sources = request_data.get('articleSource')
+        if article_sources == '':
             attitudes = SenAna.query.with_entities(SenAna.attitude).distinct().all()
-            data = [{
+            data = [[{
                 'name': attitude[0],
                 'value': SenAna.query.filter_by(attitude=attitude[0]).count()
-            } for attitude in attitudes]
+            } for attitude in attitudes]]
             return {'code': 0, 'message': '情感数据查询成功', 'success': True, 'data': data}
         else:
-            attitudes = SenAna.query.with_entities(SenAna.attitude).distinct().all()
-            data = [{
-                'name':
-                attitude[0],
-                'value':
-                SenAna.query.join(News, SenAna.newsid == News.newsid).filter(
-                    SenAna.attitude == attitude[0], News.articleSource == article_source).count()
-            } for attitude in attitudes]
+            data = []
+            for article_source in article_sources:
+                attitudes = SenAna.query.with_entities(SenAna.attitude).distinct().all()
+                data.append([{
+                    'name':
+                    attitude[0],
+                    'value':
+                    SenAna.query.join(News, SenAna.newsid == News.newsid).filter(
+                        SenAna.attitude == attitude[0],
+                        News.articleSource == article_source).count()
+                } for attitude in attitudes])
             return {'code': 0, 'message': '情感数据查询成功', 'success': True, 'data': data}

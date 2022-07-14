@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 11:37:06
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-14 00:43:30
+ * @LastEditTime: 2022-07-14 13:00:36
  * @FilePath: /app/src/views/Home/components/BottomCharts.vue
 -->
 
@@ -12,7 +12,7 @@
   <div class="bottom-charts">
     <div class="bc-chart-item">
       <div class="bcci-header">
-        {{ title1 }}
+        {{ titles[0] }}
       </div>
       <dv-active-ring-chart :config="config1" />
     </div>
@@ -20,7 +20,7 @@
 
     <div class="bc-chart-item">
       <div class="bcci-header">
-        {{ title2 }}
+        {{ titles[1] }}
       </div>
       <dv-active-ring-chart :config="config2" />
     </div>
@@ -29,7 +29,7 @@
 
     <div class="bc-chart-item">
       <div class="bcci-header">
-        {{ title3 }}
+        {{ titles[2] }}
       </div>
       <dv-active-ring-chart :config="config3" />
     </div>
@@ -38,7 +38,7 @@
 
     <div class="bc-chart-item">
       <div class="bcci-header">
-        {{ title4 }}
+        {{ titles[3] }}
       </div>
       <dv-active-ring-chart :config="config4" />
     </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, defineComponent, toRef, toRefs } from 'vue'
+import { reactive, defineComponent, toRefs, toRef } from 'vue'
 export default defineComponent({
   name: 'BottomCharts',
   props: {
@@ -62,42 +62,26 @@ export default defineComponent({
     config4: {
       default: () => { return [{ name: '', value: 0 }] as any[] }
     },
-    title1: {
-      type: String,
-      default: ''
-    },
-    title2: {
-      type: String,
-      default: ''
-    },
-    title3: {
-      type: String,
-      default: ''
-    },
-    title4: {
-      type: String,
-      default: ''
+    titles: {
+      default: () => { return ['', '', '', ''] as string[] }
     }
   },
   setup (props) {
     const state = reactive({
       config1: {
         data: toRef(props, 'config1'),
-        color: ['#00baff', '#3de7c9', '#fff', '#ffc530', '#469f4b'],
         radius: '65%',
         activeRadius: '70%'
       },
 
       config2: {
         data: toRef(props, 'config2'),
-        color: ['#00baff', '#3de7c9', '#fff', '#ffc530', '#469f4b'],
         radius: '65%',
         activeRadius: '70%'
       },
 
       config3: {
         data: toRef(props, 'config3'),
-        color: ['#00baff', '#3de7c9', '#fff', '#ffc530', '#469f4b'],
         radius: '65%',
         activeRadius: '70%'
       },

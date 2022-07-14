@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-10 15:36:54
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-13 20:32:55
+ * @LastEditTime: 2022-07-14 12:31:46
  * @FilePath: /app/src/views/Home/components/usewordcloud.ts
  */
 import * as echarts from 'echarts'
@@ -15,11 +15,18 @@ export const usewordcloud = (chartDom: HTMLElement | undefined, data:any[], rout
     tooltip: {},
     series: [{
       type: 'wordCloud',
-      gridSize: 2,
-      sizeRange: [12, 50],
+      gridSize: 8,
+      sizeRange: [12, 60],
       rotationRange: [-90, 90],
+      rotationStep: 45,
       shape: 'pentagon',
       drawOutOfBound: true,
+      left: 'center',
+      top: 'center',
+      width: '70%',
+      height: '80%',
+      right: null,
+      bottom: null,
       textStyle: {
         color: function () {
           return 'rgb(' + [

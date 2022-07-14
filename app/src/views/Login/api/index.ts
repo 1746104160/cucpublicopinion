@@ -4,7 +4,7 @@
  * @Author: 邵佳泓
  * @Date: 2022-07-04 13:37:50
  * @LastEditors: 邵佳泓
- * @LastEditTime: 2022-07-09 14:20:40
+ * @LastEditTime: 2022-07-14 14:34:58
  * @FilePath: /app/src/views/Login/api/index.ts
  */
 
@@ -17,6 +17,9 @@ const loginApi = {
   userRegister: 'auth/user/register/systemaccount',
   sendCaptcha: 'auth/user/email',
   resetPassword: 'auth/user/resetpw'
+}
+const apkApi = {
+  getQRcode: 'apk/qrcode/latest'
 }
 class Service {
   /**
@@ -111,6 +114,22 @@ class Service {
       method: 'POST',
       json: true,
       data
+    }).then((res) => {
+      if (res.code === 0) {
+        return Promise.resolve(res)
+      }
+      return Promise.reject(res)
+    })
+  }
+
+  /**
+   * @description GET 获取apk二维码
+  */
+  static getQRcode () {
+    return request({
+      url: apkApi.getQRcode,
+      method: 'GET',
+      json: true
     }).then((res) => {
       if (res.code === 0) {
         return Promise.resolve(res)

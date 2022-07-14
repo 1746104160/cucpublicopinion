@@ -35,7 +35,7 @@
           </div>
 
           <dv-border-box-4 class="rmc-bottom-container">
-            <Bottom-Charts :config1="config1" :config2="config2" :config3="config3" :config4="config4" :title1="title1" :title2="title2" :title3="title3" :title4="title4"/>
+            <Bottom-Charts :config1="config1" :config2="config2" :config3="config3" :config4="config4" :titles="titles"/>
           </dv-border-box-4>
         </div>
       </dv-border-box-1>
@@ -70,10 +70,7 @@ export default defineComponent({
     const config2 = ref([{ name: '', value: 0 }])
     const config3 = ref([{ name: '', value: 0 }])
     const config4 = ref([{ name: '', value: 0 }])
-    const title1 = ref('')
-    const title2 = ref('')
-    const title3 = ref('')
-    const title4 = ref('')
+    const titles = ref(['', '', '', '']as string[])
     let timer: NodeJS.Timer | null = null
     const formatter = (number: number) => {
       if (number < 10) {
@@ -103,28 +100,22 @@ export default defineComponent({
       Service.getPostnum().then((res: any) => {
         total.value = res.data.total.toString()
         postnums.value = res.data.data
-        Service.getSentimentforarticleSource(postnums.value[0].name).then((res: any) => {
-          config1.value = res.data
-          title1.value = postnums.value[0].name
+        titles.value = []
+        res.data.data.forEach((element:{name:string}) => {
+          titles.value.push(element.name)
         })
-        Service.getSentimentforarticleSource(postnums.value[1].name).then((res: any) => {
-          config2.value = res.data
-          title2.value = postnums.value[1].name
-        })
-        Service.getSentimentforarticleSource(postnums.value[2].name).then((res: any) => {
-          config3.value = res.data
-          title3.value = postnums.value[2].name
-        })
-        Service.getSentimentforarticleSource(postnums.value[3].name).then((res: any) => {
-          config4.value = res.data
-          title4.value = postnums.value[3].name
+        Service.getSentimentforarticleSource(titles.value).then((res: any) => {
+          config1.value = res.data[0]
+          config2.value = res.data[1]
+          config3.value = res.data[2]
+          config4.value = res.data[3]
         })
       })
       Service.getCategory().then((res: any) => {
         categories.value = res.data
       })
       Service.getSentiment().then((res: any) => {
-        sentiments.value = res.data
+        sentiments.value = res.data[0]
       })
       Service.getCluster().then((res: any) => {
         clusters.value = res.data
@@ -148,10 +139,7 @@ export default defineComponent({
       config2,
       config3,
       config4,
-      title1,
-      title2,
-      title3,
-      title4
+      titles
     }
   }
 })
